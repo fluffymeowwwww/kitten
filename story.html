@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4ebd8">
+  <title>同创汇猫咪故事馆 · 摸一摸小猫</title>
+  <link rel="stylesheet" href="story.css">
+</head>
+<body>
+
+<!-- 共用图形：爪印 / 猫剪影 / 邮戳 -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-paw" viewBox="0 0 24 24">
+      <ellipse cx="12" cy="16" rx="5.2" ry="4.2"/>
+      <ellipse cx="5.2" cy="10" rx="2.1" ry="2.7" transform="rotate(-18 5.2 10)"/>
+      <ellipse cx="9.6" cy="6.8" rx="2.1" ry="2.7" transform="rotate(-6 9.6 6.8)"/>
+      <ellipse cx="14.6" cy="6.8" rx="2.1" ry="2.7" transform="rotate(6 14.6 6.8)"/>
+      <ellipse cx="19" cy="10" rx="2.1" ry="2.7" transform="rotate(18 19 10)"/>
+    </symbol>
+    <symbol id="i-cat-sit" viewBox="0 0 100 100">
+      <g fill="currentColor">
+        <path d="M32 88 C19 86 13 76 16 66 C18 59 26 56 30 61 C33 65 29 70 25 68" fill="none" stroke="currentColor" stroke-width="10" stroke-linecap="round"/>
+        <path d="M28 94 Q24 62 41 50 Q51 43 61 45 Q79 49 83 68 L83 94 Z"/>
+        <circle cx="61" cy="39" r="19"/>
+        <path d="M77 34 C83 34 88 37 88 41 C88 45 83 47 78 46 Z"/>
+        <path d="M46 27 L43 6 L59 22 Z"/>
+        <path d="M66 23 L75 4 L82 24 Z"/>
+      </g>
+    </symbol>
+    <symbol id="i-cat-peek" viewBox="0 0 100 100">
+      <g fill="none" stroke="currentColor" stroke-width="3.4" stroke-linejoin="round">
+        <path d="M15 62 h31 l-7 -13 H9 Z"/>
+        <path d="M54 62 h31 l7 -13 H62 Z"/>
+        <rect x="13" y="62" width="74" height="30"/>
+      </g>
+      <g fill="currentColor">
+        <path d="M36 64 C36 49 44 41 53 41 C63 41 70 49 70 62 L70 65 L36 65 Z"/>
+        <path d="M41 47 L38 32 L51 40 Z"/>
+        <path d="M63 44 L70 31 L72 46 Z"/>
+      </g>
+    </symbol>
+    <symbol id="i-cat-trio" viewBox="0 0 100 100">
+      <g fill="currentColor">
+        <path d="M13 92 Q10 76 22 71 Q34 76 33 92 Z"/>
+        <circle cx="22" cy="66" r="13"/>
+        <path d="M12 58 L10 47 L21 54 Z"/>
+        <path d="M25 55 L31 46 L33 57 Z"/>
+        <path d="M37 94 Q33 66 51 55 Q68 62 67 94 Z"/>
+        <circle cx="51" cy="53" r="17"/>
+        <path d="M38 43 L35 28 L50 38 Z"/>
+        <path d="M55 40 L63 26 L68 42 Z"/>
+        <path d="M69 92 Q66 78 77 73 Q89 78 88 92 Z"/>
+        <circle cx="78" cy="68" r="12"/>
+        <path d="M69 61 L68 51 L77 57 Z"/>
+        <path d="M81 59 L87 50 L90 61 Z"/>
+      </g>
+    </symbol>
+    <symbol id="i-cat-family" viewBox="0 0 100 100">
+      <g fill="currentColor" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M15 88 C7 85 3 77 6 70 C8 65 14 63 17 67" fill="none" stroke="currentColor" stroke-width="7.5" stroke-linecap="round"/>
+        <path d="M10 94 Q7 70 21 60 Q30 54 38 56 Q50 60 52 75 L52 94 Z" stroke="none"/>
+        <circle cx="35" cy="49" r="14" stroke="none"/>
+        <path d="M47 46 C51 46 54 48 54 50 C54 53 51 54 48 53 Z" stroke="none"/>
+        <path d="M24 40 L22 26 L34 35 Z" stroke="none"/>
+        <path d="M39 38 L47 26 L51 40 Z" stroke="none"/>
+        <path d="M58 94 Q56 82 65 78 Q75 82 74 94 Z" stroke="none"/>
+        <circle cx="65" cy="74" r="10" stroke="none"/>
+        <path d="M58 68 L57 60 L64 65 Z" stroke="none"/>
+        <path d="M68 67 L73 60 L75 68 Z" stroke="none"/>
+        <path d="M78 94 Q76 84 84 80 Q93 84 92 94 Z" stroke="none"/>
+        <circle cx="84" cy="76" r="9" stroke="none"/>
+        <path d="M78 71 L77 64 L83 68 Z" stroke="none"/>
+        <path d="M87 70 L91 64 L93 71 Z" stroke="none"/>
+      </g>
+    </symbol>
+    <symbol id="i-postmark" viewBox="0 0 100 100">
+      <circle cx="50" cy="50" r="46" fill="none" stroke="currentColor" stroke-width="1.6"/>
+      <circle cx="50" cy="50" r="37" fill="none" stroke="currentColor" stroke-width="1"/>
+      <path id="pm-arc" d="M50,50 m-30,0 a30,30 0 1,1 60,0 a30,30 0 1,1 -60,0" fill="none"/>
+      <text font-size="7.6" letter-spacing="2.4" fill="currentColor" font-family="Songti SC, STSong, serif">
+        <textPath href="#pm-arc" startOffset="2%">同创汇猫咪故事馆 · 秋日来信 · VOL.01</textPath>
+      </text>
+      <text x="50" y="47" text-anchor="middle" font-size="10.5" letter-spacing="2" fill="currentColor" font-family="Songti SC, STSong, serif">已遇见</text>
+      <text x="50" y="60" text-anchor="middle" font-size="7" letter-spacing="1.5" fill="currentColor" font-family="Georgia, serif">2026 · AUTUMN</text>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="phone">
+
+  <!-- 通用顶栏 -->
+  <header class="masthead">
+    <span class="brand"><svg viewBox="0 0 24 24"><path d="M5 11 3 3l6 3h6l6-3-2 8v5c0 7-14 7-14 0z"/><path d="M8 13h.01M16 13h.01M10 17l2 1 2-1"/></svg>同创汇猫咪故事馆</span>
+    <span class="edition">VOL. 01 / 秋日来信</span>
+    <div class="mast-actions">
+      <button class="abtn" type="button" data-action="gotoWall">图鉴</button>
+      <button class="abtn abtn-back" type="button" data-action="back" hidden>返回</button>
+    </div>
+  </header>
+
+  <!-- ============ 0. 封面（首页） ============ -->
+  <section class="view active" id="v-cover">
+    <section class="hero" aria-labelledby="cover-title">
+      <p class="hero-label">距离同创汇拆迁，还有</p>
+      <div class="hero-count">
+        <b id="days-left">—</b><em>天</em>
+        <span class="side-note"><span>同创汇</span><span>猫咪守护计划</span><i>一起，把故事续下去</i></span>
+      </div>
+      <h1 id="cover-title">猫咪，<br>等一个<span class="home-word">家<svg viewBox="0 0 62 11" aria-hidden="true"><path d="M2 8Q27 1 58 4M9 10.5Q31 5 52 7.5"/></svg></span></h1>
+      <p class="hero-sub">TA 们还不知道，家要没了。</p>
+    </section>
+
+    <figure class="scene" aria-label="暖阳下的街角，橘白猫和伙伴们安静地相伴">
+      <img class="scene-slice" src="assets/scene-top.webp" width="1024" height="320" alt="" fetchpriority="high">
+      <img class="scene-slice" src="assets/scene-cats.webp" width="1024" height="480" alt="" fetchpriority="high">
+      <img class="scene-slice" src="assets/scene-ground.webp" width="1024" height="224" alt="">
+      <figcaption>在这里，每一只猫都有名字。</figcaption>
+    </figure>
+
+    <section class="invitation" aria-label="猫咪故事入口">
+      <p class="context">拆迁之前，<strong>让它们先被看见。</strong></p>
+      <button type="button" class="enter" data-action="fromCover"><span>摸一摸小猫</span><svg viewBox="0 0 42 22" aria-hidden="true"><path d="M1 11h37M29 2l10 9-10 9"/></svg></button>
+      <p class="closing"><span>遇见 · 记住 · 守护</span><span>愿每一场相遇，都通向一个家</span></p>
+    </section>
+  </section>
+
+  <!-- ============ 1. 入馆登记（首次） ============ -->
+  <section class="view" id="v-welcome">
+    <div class="view-inner">
+      <h2 class="view-title">入馆登记</h2>
+      <div class="title-orn"><i></i><svg viewBox="0 0 24 24"><use href="#i-paw"/></svg><i></i></div>
+      <p class="view-sub">留个名字，<br>你摸过的猫，才好把你记住。</p>
+
+      <div class="field">
+        <label>选一个头像（也可以用自己的照片）</label>
+        <div class="avatar-pick" id="avatarPick"></div>
+      </div>
+
+      <div class="field">
+        <label>怎么称呼你？</label>
+        <input type="text" id="nickName" value="今天也想摸猫" maxlength="10" aria-label="昵称">
+      </div>
+      <div class="field">
+        <label>一句话介绍自己（可选）</label>
+        <input type="text" id="intro" value="路过同创汇，来看看猫" maxlength="20" aria-label="简介">
+        <p class="field-hint">这句话会印在你的共鸣卡上。</p>
+      </div>
+
+      <div style="margin-top:24px">
+        <button class="btn btn-rust" type="button" data-action="enter"><svg viewBox="0 0 24 24"><use href="#i-paw"/></svg><span>推开馆门</span></button>
+      </div>
+      <p class="privacy-note">
+        <svg viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
+        登记信息只存在你的手机里
+      </p>
+    </div>
+  </section>
+
+  <!-- ============ 2. 摸猫（主入口） ============ -->
+  <section class="view" id="v-pet">
+    <div class="view-inner">
+      <figure class="pet-hero">
+        <img src="assets/pet-hero.webp" alt="暖阳下，一只手轻轻伸向纸箱，三只猫在周围张望">
+        <figcaption>嘘——轻一点，它们在看你。</figcaption>
+      </figure>
+
+      <h2 class="view-title" style="font-size:24px">伸手，摸摸今天的小猫</h2>
+      <p class="view-sub">摸到谁，就读读谁的故事。<br>馆里 15 位住客，每一只都等概率出现。</p>
+
+      <div class="pet-actions">
+        <button class="btn" type="button" data-action="draw"><svg viewBox="0 0 24 24"><use href="#i-paw"/></svg><span>伸手摸摸</span></button>
+        <button class="btn btn-ghost" type="button" data-action="draw">或闭上眼睛，让猫挑你（随机）</button>
+      </div>
+      <p class="me-strip" id="meStrip" hidden></p>
+    </div>
+  </section>
+
+  <!-- ============ 3. 反应动效 + 故事 ============ -->
+  <section class="view" id="v-story">
+    <div class="view-inner">
+      <!-- 摸到瞬间：三档性格反应动效（单次播放） -->
+      <div class="react-stage" id="reactStage">
+        <span class="react-mood-label" id="reactMood"><b>亲人</b></span>
+        <div class="react-art">
+          <img id="reactImg" src="assets/react-close.webp" alt="">
+          <span class="paw-fx p1"><svg viewBox="0 0 24 24"><use href="#i-paw"/></svg></span>
+          <span class="paw-fx p2"><svg viewBox="0 0 24 24"><use href="#i-paw"/></svg></span>
+          <span class="paw-fx p3"><svg viewBox="0 0 24 24"><use href="#i-paw"/></svg></span>
+          <span class="paw-fx p4"><svg viewBox="0 0 24 24"><use href="#i-paw"/></svg></span>
+          <span class="speed-fx s1"></span>
+          <span class="speed-fx s2"></span>
+          <span class="speed-fx s3"></span>
+        </div>
+        <p class="react-narr" id="reactNarr"></p>
+      </div>
+
+      <!-- 故事 -->
+      <div class="reaction-done" id="storyArea">
+        <div class="title-orn"><i></i><svg viewBox="0 0 24 24"><use href="#i-paw"/></svg><i></i></div>
+
+        <div class="story-head">
+          <h3 class="story-name" id="storyName">铁白</h3>
+          <div class="story-tags" id="storyTags"></div>
+        </div>
+
+        <figure class="story-portrait">
+          <div class="ph" id="storyPhoto"></div>
+          <figcaption class="cap" id="storyCap">照片由群护志愿者提供</figcaption>
+        </figure>
+
+        <div class="story-body" id="storyBody"></div>
+
+        <div style="margin-top:22px">
+          <button class="btn btn-rust" type="button" data-action="toCard"><svg viewBox="0 0 24 24"><use href="#i-paw"/></svg><span>给 TA 留句话</span></button>
+          <div style="height:10px"></div>
+          <button class="btn btn-ghost" type="button" data-action="draw">再摸一只</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 4. 留言 + 共鸣卡 ============ -->
+  <section class="view" id="v-card">
+    <div class="view-inner">
+      <h2 class="view-title" style="font-size:23px">想对 TA 说点什么？</h2>
+      <p class="view-sub">选一句，或者自己写。<br>这句话会印在卡片上，跟着 TA 的故事一起被带走。</p>
+
+      <div class="say-chips" id="sayChips"></div>
+      <div class="say-input">
+        <input type="text" id="sayInput" placeholder="或者，自己写一句……" maxlength="24" aria-label="留言">
+      </div>
+
+      <!-- 共鸣卡（DOM 实时预览） -->
+      <article class="card" aria-label="共鸣卡预览" id="cardPrev">
+        <svg class="postmark" style="color:var(--rust)"><use href="#i-postmark"/></svg>
+        <div class="card-head">
+          <div class="kicker"><b>同创汇猫咪故事馆</b>VOL.01 · 秋日来信 · 遇见纪念</div>
+          <img class="card-stamp" src="assets/stamp.webp" alt="邮票贴纸：屋顶上的猫望着暖窗">
+        </div>
+        <div class="card-rule"></div>
+        <div class="card-cat">
+          <div class="polaroid">
+            <div class="ph" id="cardPhoto"></div>
+          </div>
+          <div class="meta">
+            <h4 id="cardName">铁白</h4>
+            <div class="tags" id="cardTags"></div>
+            <span class="wait" id="cardWait">还在等家</span>
+          </div>
+        </div>
+        <p class="card-quote" id="cardQuote"></p>
+        <p class="card-say" id="cardSay">TA，我记住你了</p>
+        <div class="card-dash"></div>
+        <div class="card-foot">
+          <div class="me-avatar" id="cardAvatar"></div>
+          <div class="me">
+            <b id="cardNick">今天也想摸猫</b>
+            <span id="cardIntro">路过同创汇，来看看猫</span>
+          </div>
+          <div class="days"><b id="cardDays">81</b><span>天后拆迁</span></div>
+        </div>
+      </article>
+
+      <div class="save-row">
+        <button class="btn btn-rust" type="button" data-action="saveCard"><span>保存卡片</span></button>
+        <button class="btn btn-ghost" type="button" data-action="draw">再摸一只</button>
+      </div>
+      <p class="save-note">保存图片发笔记，让更多人知道 TA 在等家。</p>
+
+      <!-- 生成的卡片图片（保存后出现，可长按/下载） -->
+      <div class="saved-wrap" id="savedWrap" hidden>
+        <img id="savedImg" alt="共鸣卡图片">
+        <button class="btn btn-ghost" type="button" data-action="saveAgain">重新保存</button>
+      </div>
+
+      <canvas id="cardCanvas" hidden></canvas>
+      <a id="downloadLink" hidden></a>
+    </div>
+  </section>
+
+  <!-- ============ 5. 图鉴（猫墙） ============ -->
+  <section class="view" id="v-wall">
+    <div class="view-inner">
+      <h2 class="view-title">馆里的住客</h2>
+      <div class="title-orn"><i></i><svg viewBox="0 0 24 24"><use href="#i-paw"/></svg><i></i></div>
+      <p class="view-sub">15 位，每一只都有名字。<br>带 <svg style="width:11px;height:11px;display:inline;fill:var(--rust);vertical-align:-1px" viewBox="0 0 24 24"><use href="#i-paw"/></svg> 的，是你已经摸过的。</p>
+
+      <div class="wall-grid" id="wallGrid"></div>
+      <p class="wall-foot">点任意一只，读读 TA 的故事。<br>它们还不知道，家要没了——但可以先被记住。</p>
+    </div>
+  </section>
+
+</div>
+
+<input type="file" id="filePick" accept="image/*" hidden>
+<script src="cats.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
