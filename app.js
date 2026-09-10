@@ -7,40 +7,35 @@
   /* ---------- 常量与状态 ---------- */
   var PREFIX = "tc-cat-story:";
   var DEADLINE = new Date("2026-11-30T23:59:59+08:00");
-  /* v1.5：摸到瞬间的反应插画按「花色」分 7 组，统一温馨动作，不再按性格分三档 */
+  /* v1.5：摸到瞬间的反应插画按「花色」分组，统一温馨动作，不再按性格分三档
+     v1.5.1：增至 8 组（新增简州猫）；池内花色已全部订正为标准名，直接按 color 归组 */
   var COAT_IMG = {
-    orange: "assets/react-orange.webp",   // 橘白
-    golden: "assets/react-golden.webp",   // 金渐层
-    silver: "assets/react-silver.webp",   // 银渐层
-    cow: "assets/react-cow.webp",         // 奶牛
-    tabby: "assets/react-tabby.webp",     // 狸花
-    calico: "assets/react-calico.webp",   // 三花
-    white: "assets/react-white.webp"      // 纯白
-  };
-  // 池内花色与 7 组不完全一致的个体，按 id 显式归组；其余按 color 关键词归
-  var COAT_ID = {
-    zhuzai: "tabby",      // 简州猫（虎斑加白）
-    sanyanmei: "calico",  // 玳瑁 → 三花组
-    xiaodui: "tabby",     // 雀猫（褐色条纹）→ 狸花组
-    tiebai: "white"       // 纯白
+    orange: "assets/react-orange.webp",       // 橘白
+    golden: "assets/react-golden.webp",       // 金渐层
+    silver: "assets/react-silver.webp",       // 银渐层
+    cow: "assets/react-cow.webp",             // 奶牛
+    jianzhou: "assets/react-jianzhou.webp",   // 简州猫
+    tabby: "assets/react-tabby.webp",         // 狸花（含雀猫）
+    calico: "assets/react-calico.webp",       // 三花
+    white: "assets/react-white.webp"          // 纯白
   };
   // 每组动作：pet 被摸蹭手心｜stretch 伸懒腰，决定旁白文案
   var COAT_SCENE = {
     orange: "pet", golden: "stretch", silver: "pet", cow: "pet",
-    tabby: "stretch", calico: "pet", white: "stretch"
+    jianzhou: "pet", tabby: "stretch", calico: "pet", white: "stretch"
   };
   var REACT_TXT = {
     pet: ["TA 把脑袋轻轻凑了过来。", "咕噜咕噜——这是猫给你的见面礼。"],
     stretch: ["TA 当着你的面，伸了个大大的懒腰。", "猫只有在觉得安全的地方，才会这样放松。"]
   };
   function coatGroup(cat) {
-    if (COAT_ID[cat.id]) return COAT_ID[cat.id];
     var c = cat.color || "";
     if (/金渐层/.test(c)) return "golden";
     if (/银渐层/.test(c)) return "silver";
     if (/奶牛/.test(c)) return "cow";
+    if (/简州/.test(c)) return "jianzhou";
     if (/三花|玳瑁|彩狸/.test(c)) return "calico";
-    if (/狸花|雀猫|虎斑|简州/.test(c)) return "tabby";
+    if (/狸花|雀猫|虎斑/.test(c)) return "tabby";
     if (/白猫/.test(c)) return "white";
     return "orange";  // 橘白/全橘等橘系及兜底
   }

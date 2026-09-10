@@ -12,15 +12,18 @@ ASSETS.mkdir(parents=True, exist_ok=True)
 hero = Image.open(SRC / "pet-hero.jpg").convert("RGB")
 hero.save(ASSETS / "pet-hero.webp", quality=90, method=6)
 
-# 2) 摸到瞬间：7 组花色反应插画（v1.5 起按花色分组，整图缩放转换；
-#    不再是按性格切三档的拼图）
+# 2) 摸到瞬间：8 组花色反应插画（v1.5 起按花色分组，整图缩放转换；
+#    不再是按性格切三档的拼图）。jianzhou 源图底缘有淡水印，先裁 1.5%
 REACT_W = 750
-for stem in ("orange", "golden", "silver", "cow", "tabby", "calico", "white"):
+for stem in ("orange", "golden", "silver", "cow", "jianzhou", "tabby", "calico", "white"):
     im = Image.open(SRC / f"react-{stem}.jpg").convert("RGB")
+    if stem == "jianzhou":
+        w0, h0 = im.size
+        im = im.crop((0, 0, w0, int(h0 * 0.985)))
     w, h = im.size
     im = im.resize((REACT_W, round(h * REACT_W / w)), Image.LANCZOS)
     im.save(ASSETS / f"react-{stem}.webp", quality=80, method=6)
-print("reactions: 7 coat illustrations (orange/golden/silver/cow/tabby/calico/white)")
+print("reactions: 8 coat illustrations (orange/golden/silver/cow/jianzhou/tabby/calico/white)")
 
 # 3) 头像集：3x2 金色圆环网格，几何坐标（由环边投影推导：间距 593、半径 212）
 av = Image.open(SRC / "avatars.jpg").convert("RGB")
@@ -41,4 +44,4 @@ for cy in row_centers:
 stamp = Image.open(SRC / "stamp.jpg").convert("RGB")
 stamp.save(ASSETS / "stamp.webp", quality=92, method=6)
 
-print("Story assets: pet-hero, 7 coat reactions, avatars, stamp.")
+print("Story assets: pet-hero, 8 coat reactions, avatars, stamp.")

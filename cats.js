@@ -100,14 +100,14 @@
     },
     {
       id: "sanyanmei", name: "三眼妹", pool: true,
-      mood: "close", color: "玳瑁", gender: "母猫", sterilized: true,
+      mood: "close", color: "狸花猫", gender: "母猫", sterilized: true,
       status: "wait", family: "", area: "同创", silhouette: "peek",
       photo: "sanyanmei.jpg", has_photo: true,
       relations: [
         { label: "女儿", names: ["紫霞", "老白"] },
       ],
       story: [
-        "一只玳瑁。据说当年给她做绝育花了一千五——这一片身价最高的 TNR 选手。",
+        "一只狸花猫。据说当年给她做绝育花了一千五——这一片身价最高的 TNR 选手。",
         "她生过一胎，女儿是[[紫霞]]和[[老白]]。孩子散在各处，她自己留了下来。",
         "依然亲人。好像不管经历过什么，她都愿意再信人一次。",
       ],
@@ -224,7 +224,7 @@
     },
     {
       id: "dianbai", name: "点白", pool: true,
-      mood: "gone", color: "三花猫", gender: "母猫", sterilized: true,
+      mood: "gone", color: "白猫", gender: "母猫", sterilized: true,
       status: "wait", family: "小梅家族", area: "同创", silhouette: "sit",
       photo: "dianbai.jpg", has_photo: true,
       relations: [
