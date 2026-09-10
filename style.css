@@ -1,0 +1,46 @@
+:root{--paper:#f4ebd8;--pine:#263f36;--rust:#aa4d31;--muted:#7e806c;--serif:"Songti SC","STSong","Noto Serif CJK SC","SimSun",serif;--body:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif}
+*{box-sizing:border-box}
+body{margin:0;background:#d9d7cb;color:var(--pine);font-family:var(--body);-webkit-font-smoothing:antialiased}
+.cover{width:100%;max-width:440px;margin:0 auto;overflow:hidden;background:var(--paper) url("assets/paper-grain.png");position:relative;min-height:100svh}
+.masthead{display:flex;align-items:center;justify-content:space-between;margin:0 25px;padding:22px 0 14px;border-bottom:1px solid #263f3629;gap:10px}
+.brand{display:flex;align-items:center;gap:7px;font-size:11px;letter-spacing:1px;font-weight:600;white-space:nowrap}
+.brand svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
+.edition{font-size:8px;letter-spacing:1px;white-space:nowrap;color:#77806d}
+
+/* ===== 倒计时主角区 ===== */
+.hero{padding:26px 27px 0;position:relative;z-index:1}
+.hero-label{margin:0;font-size:11px;letter-spacing:3px;color:#697462}
+.hero-count{display:flex;align-items:baseline;gap:10px;margin:6px 0 0;position:relative}
+.hero-count b{font-family:Georgia,"Times New Roman",serif;font-weight:700;font-size:118px;line-height:.9;color:var(--rust);font-variant-numeric:lining-nums;letter-spacing:-2px;text-shadow:0 3px 0 #aa4d311f}
+.hero-count em{font-style:normal;font-family:var(--serif);font-size:28px;color:var(--rust);letter-spacing:3px;font-weight:700;margin-left:2px}
+.side-note{position:absolute;top:6px;right:0;transform:rotate(7deg);text-align:center;border:1px solid #aa4d3170;color:var(--rust);padding:8px 9px 6px;background:#f4ebd866}
+.side-note span{display:block;font-family:var(--serif);font-size:15px;font-weight:700;letter-spacing:3px;line-height:1.4}
+.side-note span+span{font-family:var(--body);font-size:8px;letter-spacing:1px;margin-top:3px;padding-top:4px;border-top:1px solid #aa4d3145}
+.side-note i{display:block;font-style:normal;font-size:7px;letter-spacing:.5px;margin-top:5px}
+.hero h1{font-family:var(--serif);font-size:37px;line-height:1.28;letter-spacing:3px;font-weight:900;margin:14px 0 0}
+.home-word{color:var(--rust);position:relative;display:inline-block}
+.home-word svg{position:absolute;left:-2px;bottom:-7px;width:46px;height:11px;fill:none;stroke:var(--rust);stroke-width:2.4;stroke-linecap:round}
+.hero-sub{margin:12px 0 0;color:#67715e;font-family:var(--serif);font-size:13px;line-height:1.8;letter-spacing:2px}
+
+/* ===== 插画场景 ===== */
+.scene{margin:16px 0 0;position:relative;isolation:isolate}
+.scene-slice{width:100%;height:auto;display:block}
+.scene:before,.scene:after{content:"";position:absolute;left:0;right:0;pointer-events:none;z-index:1}
+.scene:before{top:0;height:39px;background:linear-gradient(var(--paper),transparent)}
+.scene:after{bottom:0;height:47px;background:linear-gradient(transparent,var(--paper))}
+.scene figcaption{position:absolute;bottom:12px;left:0;right:0;text-align:center;z-index:2;color:#52614e;font-family:var(--serif);font-size:11px;letter-spacing:2px;text-shadow:0 1px 8px var(--paper)}
+
+/* ===== 入口区 ===== */
+.invitation{position:relative;padding:2px 27px 24px;background:var(--paper) url("assets/paper-grain.png")}
+.context{margin:0 0 16px;font-family:var(--serif);font-size:16px;letter-spacing:1.5px;text-align:center}
+.context strong{font-weight:700}
+.enter{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:56px;background:var(--pine);color:#f8efda;text-decoration:none;padding:15px 22px;font-family:var(--serif);font-size:19px;letter-spacing:3px;border-radius:3px;box-shadow:0 3px 0 #c1bda5;transition:background .2s,transform .2s}
+.enter svg{width:33px;height:20px;stroke:currentColor;stroke-width:1.2;fill:none}
+.enter:hover{background:#355648}
+.enter:active{transform:translateY(2px)}
+.enter:focus-visible{outline:3px solid var(--rust);outline-offset:4px}
+.closing{display:flex;justify-content:space-between;gap:8px;font-size:8px;letter-spacing:.8px;margin:15px 0 0;color:#7c806d}
+
+@media(min-width:600px){body{padding:36px 0}.cover{box-shadow:0 18px 65px #263f3630;min-height:0}}
+@media(max-width:360px){.masthead{margin:0 20px}.hero{padding-left:22px;padding-right:22px}.hero-count b{font-size:96px}.hero-count em{font-size:23px}.hero h1{font-size:32px}.side-note{right:-6px;padding:7px 8px 5px}.side-note span{font-size:13px}.invitation{padding-left:22px;padding-right:22px}.closing{font-size:7px}}
+@media(prefers-reduced-motion:reduce){.enter{transition:none}}
