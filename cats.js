@@ -19,7 +19,8 @@
    name       名字
    alias      别名，原表括号里的叫法（如「话唠（喵桑）」→ 别名 喵桑）
    pool       true = 进首页摸猫池（只有 HALL 的 15 位是 true）
-   mood       性格档位，决定摸到时的反应动效：'close' 亲人｜'shy' 中等需培养｜'gone' 不亲人
+   mood       性格档位，用于标签与共鸣卡：'close' 亲人｜'shy' 中等需培养｜'gone' 不亲人
+              （摸到瞬间的插画/动效按 color 花色分组，与 mood 无关）
               非摸猫池的猫为 null
    color      品种 / 花色
    gender     '母猫'｜'公猫'｜'都有'

@@ -7,16 +7,44 @@
   /* ---------- 常量与状态 ---------- */
   var PREFIX = "tc-cat-story:";
   var DEADLINE = new Date("2026-11-30T23:59:59+08:00");
-  var MOOD_IMG = {
-    close: "assets/react-close.webp",
-    shy: "assets/react-shy.webp",
-    gone: "assets/react-gone.webp"
+  /* v1.5：摸到瞬间的反应插画按「花色」分 7 组，统一温馨动作，不再按性格分三档 */
+  var COAT_IMG = {
+    orange: "assets/react-orange.webp",   // 橘白
+    golden: "assets/react-golden.webp",   // 金渐层
+    silver: "assets/react-silver.webp",   // 银渐层
+    cow: "assets/react-cow.webp",         // 奶牛
+    tabby: "assets/react-tabby.webp",     // 狸花
+    calico: "assets/react-calico.webp",   // 三花
+    white: "assets/react-white.webp"      // 纯白
   };
-  var MOOD_TXT = {
-    close: ["TA 一翻身，把肚皮递到了你手心。", "咕噜咕噜——这是猫能给的最高礼遇。"],
-    shy: ["她先退了半步……", "又忍不住凑过来，闻了闻你的手指。"],
-    gone: ["嗖——TA 还没准备好。", "不是每只猫都要被摸到，你愿意看见 TA，就很好了。"]
+  // 池内花色与 7 组不完全一致的个体，按 id 显式归组；其余按 color 关键词归
+  var COAT_ID = {
+    zhuzai: "tabby",      // 简州猫（虎斑加白）
+    sanyanmei: "calico",  // 玳瑁 → 三花组
+    xiaodui: "tabby",     // 雀猫（褐色条纹）→ 狸花组
+    tiebai: "white"       // 纯白
   };
+  // 每组动作：pet 被摸蹭手心｜stretch 伸懒腰，决定旁白文案
+  var COAT_SCENE = {
+    orange: "pet", golden: "stretch", silver: "pet", cow: "pet",
+    tabby: "stretch", calico: "pet", white: "stretch"
+  };
+  var REACT_TXT = {
+    pet: ["TA 把脑袋轻轻凑了过来。", "咕噜咕噜——这是猫给你的见面礼。"],
+    stretch: ["TA 当着你的面，伸了个大大的懒腰。", "猫只有在觉得安全的地方，才会这样放松。"]
+  };
+  function coatGroup(cat) {
+    if (COAT_ID[cat.id]) return COAT_ID[cat.id];
+    var c = cat.color || "";
+    if (/金渐层/.test(c)) return "golden";
+    if (/银渐层/.test(c)) return "silver";
+    if (/奶牛/.test(c)) return "cow";
+    if (/三花|玳瑁|彩狸/.test(c)) return "calico";
+    if (/狸花|雀猫|虎斑|简州/.test(c)) return "tabby";
+    if (/白猫/.test(c)) return "white";
+    return "orange";  // 橘白/全橘等橘系及兜底
+  }
+  var REACT_CYCLE = 3200;
   var MOOD_LABEL = { close: "亲人", shy: "中等 · 需培养", gone: "不亲人" };
   var SILSIL = { sit: "i-cat-sit", peek: "i-cat-peek", trio: "i-cat-trio", family: "i-cat-family" };
   /* v1.4：留言主题从「想对 TA 说」改为「说说和 TA 的故事」
@@ -214,27 +242,26 @@
     var revealName = document.getElementById("revealName");
     var goBtn = document.querySelector("#v-react .react-actions .btn");
 
-    stage.className = "react-stage";        // 清掉旧性格类，重排后再加，动画才会重播
+    var group = coatGroup(cat);              // 按花色选插画与旁白，动效全猫统一
+    stage.className = "react-stage";        // 清掉旧类，重排后再加，动画才会重播
     if (goBtn) goBtn.classList.remove("ready");
-    img.src = MOOD_IMG[cat.mood];
+    img.src = COAT_IMG[group];
     img.alt = cat.name + "的反应";
     if (revealName) revealName.textContent = cat.name;
     renderTags(document.getElementById("reactTags"), cat);   // 简介标签行，进入即见
-    narr.innerHTML = MOOD_TXT[cat.mood].map(function (t) {
+    narr.innerHTML = REACT_TXT[COAT_SCENE[group]].map(function (t) {
       return '<span class="line">' + t + "</span>";
     }).join("");
 
     void stage.offsetWidth;
-    stage.className = "react-stage stage-" + cat.mood;
+    stage.className = "react-stage stage-warm";
 
     // 动效演完后不再自动翻页：只把按钮点亮并轻轻提示，等用户自己点「看看 TA 的故事」
     reactTimer = setTimeout(function () {
       reactTimer = null;
       if (goBtn) goBtn.classList.add("ready");
-    }, cycleDuration(cat.mood));
+    }, REACT_CYCLE);
   }
-
-  function cycleDuration(mood) { return mood === "shy" ? 3400 : 3200; }
 
   function gotoStory(cat) {
     if (!cat) return;
@@ -243,9 +270,9 @@
     push("v-story");
   }
 
-  /* 预加载反应图，避免切页时白屏 */
+  /* 预加载花色反应图，避免切页时白屏 */
   function preload() {
-    Object.keys(MOOD_IMG).forEach(function (k) { var i = new Image(); i.src = MOOD_IMG[k]; });
+    Object.keys(COAT_IMG).forEach(function (k) { var i = new Image(); i.src = COAT_IMG[k]; });
   }
 
   /* ---------- 标签行（摸到瞬间的简介 / 故事页 / 档案卡共用） ---------- */

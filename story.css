@@ -73,7 +73,7 @@ img{display:block;max-width:100%}
    名字与标签简介进入即显示，反应动效同时播一遍（时长收敛在 --cycle）；
    演完不自动翻页：按钮点亮提示，用户自己点「看看 TA 的故事」进故事页。 */
 .react-stage{--cycle:3.2s;margin:12px 0 0;text-align:center}
-.react-art{position:relative;height:360px;height:min(44svh,360px);width:auto;aspect-ratio:372/762;margin:0 auto;overflow:hidden;background:#fbf4e4;border:1px solid #263f3622;box-shadow:0 8px 20px #263f361f}
+.react-art{position:relative;height:360px;height:min(44svh,360px);width:auto;aspect-ratio:9/16;margin:0 auto;overflow:hidden;background:#fbf4e4;border:1px solid #263f3622;box-shadow:0 8px 20px #263f361f}
 .react-art img{width:100%;height:100%;object-fit:cover;display:block;will-change:transform,clip-path}
 /* 抽到结果：进入即见，不再分「先动效、后揭晓」两段 */
 .react-reveal{margin:13px auto 0;text-align:center}
@@ -81,9 +81,8 @@ img{display:block;max-width:100%}
 .reveal-name{display:block;font-family:var(--serif);font-size:31px;font-weight:900;letter-spacing:6px;color:var(--rust);line-height:1.3;margin-top:2px}
 .reveal-name:after{content:"！";font-size:22px;letter-spacing:0}
 .react-tags{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:9px}
-/* 性格标签随动效档位变色 */
-.stage-close .react-tags .tag-mood{border-color:var(--rust);color:var(--rust)}
-.stage-gone .react-tags .tag-mood{border-color:var(--muted);color:var(--muted)}
+/* 摸到瞬间动效已不分档，性格标签统一陶土暖色 */
+.stage-warm .react-tags .tag-mood{border-color:var(--rust);color:var(--rust)}
 .react-narr{margin:11px auto 0;max-width:320px;font-family:var(--serif);font-size:13px;letter-spacing:1.5px;line-height:1.9;color:var(--ink)}
 .react-narr .line{display:block}
 .react-actions{margin-top:14px}
@@ -106,54 +105,23 @@ img{display:block;max-width:100%}
   .react-narr{font-size:12px}
 }
 
-/* —— 亲人：弹进手心 → 呼噜 + 蹭 + 爪印飘 —— */
-.stage-close{--cycle:3.2s}
-.stage-close .react-art img{animation:close-enter .8s cubic-bezier(.2,1.45,.4,1) both, close-life 2.4s ease-in-out .8s forwards}
-@keyframes close-enter{0%{transform:translateY(40%) scale(.7);opacity:0}55%{opacity:1}100%{transform:translateY(0) scale(1);opacity:1}}
-@keyframes close-life{0%,100%{transform:scale(1.012) rotate(-1.4deg)}25%{transform:scale(1) rotate(1.2deg)}50%{transform:scale(1.03) rotate(.4deg)}75%{transform:scale(1) rotate(-1.2deg)}}
+/* —— 摸到瞬间（全猫统一）：弹入 → 呼噜轻晃 + 爪印飘，单次播放 —— */
+.stage-warm{--cycle:3.2s}
+.stage-warm .react-art img{animation:warm-enter .8s cubic-bezier(.2,1.45,.4,1) both, warm-life 2.4s ease-in-out .8s forwards}
+@keyframes warm-enter{0%{transform:translateY(40%) scale(.7);opacity:0}55%{opacity:1}100%{transform:translateY(0) scale(1);opacity:1}}
+@keyframes warm-life{0%,100%{transform:scale(1.012) rotate(-1.4deg)}25%{transform:scale(1) rotate(1.2deg)}50%{transform:scale(1.03) rotate(.4deg)}75%{transform:scale(1) rotate(-1.2deg)}}
 .paw-fx{position:absolute;width:20px;height:20px;color:var(--rust);opacity:0;z-index:2;pointer-events:none}
 .paw-fx svg{width:100%;height:100%;fill:currentColor}
-.stage-close .paw-fx{animation:paw-rise 1.3s ease-out}
+.stage-warm .paw-fx{animation:paw-rise 1.3s ease-out}
 .paw-fx.p1{left:32%;top:52%;animation-delay:.5s}
 .paw-fx.p2{left:56%;top:46%;animation-delay:.85s;width:16px;height:16px}
 .paw-fx.p3{left:44%;top:56%;animation-delay:1.2s;width:24px;height:24px}
 .paw-fx.p4{left:64%;top:54%;animation-delay:1.5s;width:15px;height:15px}
 @keyframes paw-rise{0%{opacity:0;transform:translateY(0) scale(.5) rotate(-18deg)}14%{opacity:.85}70%{opacity:.6}100%{opacity:0;transform:translateY(-150px) scale(1) rotate(16deg)}}
 
-/* —— 中等：藏着 → 探头 → 缩 → 凑近嗅 —— */
-.stage-shy{--cycle:3.4s}
-.stage-shy .react-art img{animation:shy-peek var(--cycle) ease-in-out}
-@keyframes shy-peek{
-  0%,17%{clip-path:inset(0 56% 0 0);transform:translateX(0)}
-  34%{clip-path:inset(0 25% 0 0)}
-  47%{clip-path:inset(0 33% 0 0);transform:translateX(-5px)}
-  63%{clip-path:inset(0 0 0 0);transform:translateX(0)}
-  74%,82%,90%{transform:translateY(-4px)}
-  78%,86%,96%,100%{transform:translateY(0)}
-}
-
-/* —— 不亲人：尾巴一晃 → 嗖地缩进空箱 —— */
-.stage-gone .react-art img{animation:gone-run var(--cycle) ease-in-out forwards}
-@keyframes gone-run{
-  0%{transform:translateY(40%);clip-path:inset(0 0 0 0)}
-  12%{transform:translateY(0)}
-  26%{transform:translateY(0);clip-path:inset(0 0 0 0)}
-  34%{clip-path:inset(46% 0 0 0)}
-  40%{transform:rotate(2.6deg);clip-path:inset(46% 0 0 0)}
-  47%{transform:rotate(-2.2deg)}
-  55%,100%{transform:rotate(0);clip-path:inset(46% 0 0 0)}
-}
-.speed-fx{position:absolute;left:14%;right:14%;height:2.5px;border-radius:2px;background:var(--rust);opacity:0;z-index:2;pointer-events:none}
-.speed-fx.s1{top:33%}
-.speed-fx.s2{top:40%;left:24%;right:24%}
-.speed-fx.s3{top:47%;left:18%;right:30%}
-.stage-gone .speed-fx{animation:whoosh var(--cycle) ease-out}
-@keyframes whoosh{0%,27%{opacity:0;transform:translateX(-46px)}31%{opacity:.75}37%{opacity:0;transform:translateX(46px)}100%{opacity:0}}
-
 /* 旁白随结果一起立即可见，不再按动效节奏延迟淡入 */
 @media(prefers-reduced-motion:reduce){
-  .stage-close .react-art img,.stage-shy .react-art img,.stage-gone .react-art img,
-  .paw-fx,.speed-fx{animation-duration:.01s !important;animation-iteration-count:1 !important}
+  .stage-warm .react-art img,.paw-fx{animation-duration:.01s !important;animation-iteration-count:1 !important}
   .react-actions .btn.ready{animation:none}
 }
 .story-head{margin:10px 0 0;text-align:center;position:relative}
