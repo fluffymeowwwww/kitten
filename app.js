@@ -21,8 +21,46 @@
   var PRESET_AVATARS = ["avatar-1.webp", "avatar-2.webp", "avatar-3.webp", "avatar-4.webp",
     "avatar-5.webp", "avatar-6.webp", "avatar-7.webp", "avatar-8.webp", "avatar-9.webp"];
   var SILSIL = { sit: "i-cat-sit", peek: "i-cat-peek", trio: "i-cat-trio", family: "i-cat-family" };
-  var SAYS = ["TA，我记住你了", "要平安等到家", "谢谢你愿意靠近我", "下辈子，别再流浪了"];
-  var RESULT_HOLD = 2000;   // 动效演完后，结果页再停留这么久才自动进故事页
+  var SAYS = ["TA，我记住你了", "要平安等到家", "谢谢你愿意靠近我"];
+
+  // 现状标签：用于「猫猫手册」列表角标与档案卡
+  var STATUS_TAG = {
+    wait: { t: "还在等家", cls: "tag-wait" },
+    home: { t: "TA 有家了", cls: "tag-home" },
+    star: { t: "已回喵星", cls: "tag-star" },
+    lost: { t: "失踪", cls: "tag-lost" },
+    shop: { t: "司猫", cls: "tag-shop" },
+    foster: { t: "寄养中", cls: "tag-foster" }
+  };
+  var STATUS_LINE = {
+    wait: "还在等一个家。",
+    home: "TA 已经有人带回家了。",
+    star: "TA 已经回喵星了。",
+    lost: "TA 失踪了，没有再出现。",
+    shop: "TA 是店里的常驻小猫。",
+    foster: "TA 现在在寄养家庭里。"
+  };
+  var ARCHIVE_CAP = { star: "记着 TA 就好", lost: "给 TA 留一张空位" };
+
+  // 摸猫池：只有 HALL 的 15 位会出现在首页抽卡里
+  var POOL = CATS.filter(function (c) { return c.pool; });
+  // 名字 → 猫（含别名与原表错别字），用于故事里 [[热词]] 的跳转
+  var NAME_MAP = (function () {
+    var m = {};
+    CATS.forEach(function (c) {
+      m[c.name] = c;
+      (c.alias || []).forEach(function (a) { m[a] = c; });
+    });
+    return m;
+  })();
+  function resolveCat(name) {
+    if (NAME_MAP[name]) return NAME_MAP[name];
+    for (var i = 0; i < CATS.length; i++) {
+      var n = CATS[i].name;
+      if (n.indexOf(name) !== -1 || name.indexOf(n) !== -1) return CATS[i];
+    }
+    return null;
+  }
 
   function getKey(k) { return PREFIX + k; }
   function loadJSON(k, fb) { try { var v = localStorage.getItem(getKey(k)); return v ? JSON.parse(v) : fb; } catch (e) { return fb; } }
@@ -38,6 +76,7 @@
   };
 
   var $ = function (s) { return document.querySelector(s); };
+  function setText(id, v) { var el = document.getElementById(id); if (el) el.textContent = v; }
 
   /* ---------- 倒计时 ---------- */
   function daysLeft() {
@@ -45,7 +84,7 @@
   }
 
   /* ---------- 洗牌 ---------- */
-  function freshDeck() { return shuffle(CATS.map(function (c) { return c.id; })); }
+  function freshDeck() { return shuffle(POOL.map(function (c) { return c.id; })); }
   function shuffle(arr) {
     for (var i = arr.length - 1; i > 0; i--) {
       var j = Math.floor(Math.random() * (i + 1));
@@ -65,12 +104,12 @@
   }
 
   /* ---------- 视图切换（无 hash，纯状态） ---------- */
-  var views = ["v-cover", "v-welcome", "v-pet", "v-react", "v-story", "v-card", "v-wall"];
-  var TAB_OF = { "v-cover": 1, "v-pet": 1, "v-wall": 1 };          // 底部导航页
+  var views = ["v-cover", "v-welcome", "v-pet", "v-react", "v-story", "v-card", "v-wall", "v-contact"];
+  var TAB_OF = { "v-cover": 1, "v-pet": 1, "v-wall": 1, "v-contact": 1 };   // 底部导航页
   var TAB_MAP = {
     "v-cover": "v-cover", "v-welcome": "v-cover",
     "v-pet": "v-pet", "v-react": "v-pet", "v-story": "v-pet", "v-card": "v-pet",
-    "v-wall": "v-wall"
+    "v-wall": "v-wall", "v-contact": "v-contact"
   };
   var STORY_CHAIN = ["v-react", "v-story"];                          // 故事链：连续摸猫不堆叠返回层
 
@@ -157,8 +196,10 @@
     var img = document.getElementById("reactImg");
     var narr = document.getElementById("reactNarr");
     var revealName = document.getElementById("revealName");
+    var goBtn = document.querySelector("#v-react .react-actions .btn");
 
     stage.className = "react-stage";        // 清掉旧性格类，重排后再加，动画才会重播
+    if (goBtn) goBtn.classList.remove("ready");
     img.src = MOOD_IMG[cat.mood];
     img.alt = cat.name + "的反应";
     if (revealName) revealName.textContent = cat.name;
@@ -170,12 +211,11 @@
     void stage.offsetWidth;
     stage.className = "react-stage stage-" + cat.mood;
 
-    // 动效演完 + 停留 RESULT_HOLD 让结果看够，再自动进故事页；中途切走就不打扰
+    // 动效演完后不再自动翻页：只把按钮点亮并轻轻提示，等用户自己点「看看 TA 的故事」
     reactTimer = setTimeout(function () {
       reactTimer = null;
-      var view = document.getElementById("v-react");
-      if (state.current === cat && view && view.classList.contains("active")) gotoStory(cat);
-    }, cycleDuration(cat.mood) + RESULT_HOLD);
+      if (goBtn) goBtn.classList.add("ready");
+    }, cycleDuration(cat.mood));
   }
 
   function cycleDuration(mood) { return mood === "shy" ? 3400 : 3200; }
@@ -192,11 +232,13 @@
     Object.keys(MOOD_IMG).forEach(function (k) { var i = new Image(); i.src = MOOD_IMG[k]; });
   }
 
-  /* ---------- 标签行（摸到瞬间的简介 / 故事页共用） ---------- */
+  /* ---------- 标签行（摸到瞬间的简介 / 故事页 / 档案卡共用） ---------- */
   function tagData(cat) {
-    var tags = [{ t: cat.color + " · " + cat.gender }, { t: MOOD_LABEL[cat.mood], cls: "tag-mood" }];
+    var tags = [{ t: cat.color + " · " + cat.gender }];
+    if (cat.mood) tags.push({ t: MOOD_LABEL[cat.mood], cls: "tag-mood" });
     if (cat.sterilized) tags.push({ t: "已绝育" });
-    tags.push(cat.adopted ? { t: "TA 有家了", cls: "tag-home" } : { t: "还在等家", cls: "tag-wait" });
+    var s = STATUS_TAG[cat.status];
+    if (s) tags.push({ t: s.t, cls: s.cls });
     return tags;
   }
   function renderTags(wrap, cat) {
@@ -209,7 +251,7 @@
     });
   }
 
-  /* ---------- 故事渲染（含热词串门） ---------- */
+  /* ---------- 故事渲染（含热词串门）；档案猫没有故事，改渲染档案卡 ---------- */
   function renderStory(cat) {
     document.getElementById("storyName").textContent = cat.name;
 
@@ -218,18 +260,103 @@
 
     // 照片位
     renderPhotoSlot(document.getElementById("storyPhoto"), cat);
-    document.getElementById("storyCap").textContent = cat.has_photo ? "照片由群护志愿者提供" : cat.cardNote || "TA 的照片还在路上";
+    document.getElementById("storyCap").textContent = cat.has_photo
+      ? "照片由群护志愿者提供"
+      : (ARCHIVE_CAP[cat.status] || cat.cardNote || "TA 的照片还在路上");
 
-    // 故事正文 + 热词
     var body = document.getElementById("storyBody");
     body.innerHTML = "";
-    cat.story.forEach(function (txt) { body.appendChild(buildPara(txt)); });
-    // 金句
-    var quote = document.createElement("p"); quote.className = "quote"; quote.textContent = cat.quote; body.appendChild(quote);
-    // 家族
+    var hasStory = cat.story && cat.story.length;
+    if (hasStory) {
+      cat.story.forEach(function (txt) { body.appendChild(buildPara(txt)); });
+      var quote = document.createElement("p"); quote.className = "quote"; quote.textContent = cat.quote; body.appendChild(quote);
+      if (cat.family) body.appendChild(familyRow(cat.family));
+    } else {
+      body.appendChild(buildArchive(cat));
+    }
+    // 只有有故事的猫才引导写留言（共鸣卡上那句金句来自 story）
+    document.getElementById("toCardWrap").hidden = !hasStory;
+  }
+
+  function familyRow(name) {
     var fam = document.createElement("p"); fam.className = "family-row";
-    fam.innerHTML = '<svg viewBox="0 0 24 24"><use href="#i-paw"/></svg>' + cat.family;
-    body.appendChild(fam);
+    fam.innerHTML = '<svg viewBox="0 0 24 24"><use href="#i-paw"/></svg>';
+    fam.appendChild(document.createTextNode(name));
+    return fam;
+  }
+
+  /* ---------- 档案卡（表二里只有档案、没有故事的猫） ---------- */
+  function buildArchive(cat) {
+    var wrap = document.createElement("div");
+    wrap.className = "archive";
+
+    var line = document.createElement("p");
+    line.className = "archive-state";
+    line.textContent = STATUS_LINE[cat.status] || "";
+    wrap.appendChild(line);
+
+    var facts = [
+      ["品种", cat.color],
+      ["性别", cat.gender],
+      ["绝育", cat.sterilized === true ? "已绝育" : (cat.sterilized === false ? "未绝育" : "未记录")],
+      ["家族", cat.family || "未归入家族"]
+    ];
+    var dl = document.createElement("dl");
+    dl.className = "archive-facts";
+    facts.forEach(function (f) {
+      var d = document.createElement("div");
+      var dt = document.createElement("dt"); dt.textContent = f[0];
+      var dd = document.createElement("dd"); dd.textContent = f[1];
+      d.appendChild(dt); d.appendChild(dd); dl.appendChild(d);
+    });
+    wrap.appendChild(dl);
+
+    if (cat.note) {
+      var note = document.createElement("p");
+      note.className = "archive-note";
+      note.textContent = "原表记录：" + cat.note;
+      wrap.appendChild(note);
+    }
+
+    if (cat.relations && cat.relations.length) {
+      var h = document.createElement("h5");
+      h.className = "archive-rel-title";
+      h.textContent = "TA 的关系网";
+      wrap.appendChild(h);
+      var ul = document.createElement("ul");
+      ul.className = "archive-rel";
+      cat.relations.forEach(function (r) {
+        var li = document.createElement("li");
+        if (r.label) {
+          var lb = document.createElement("span"); lb.className = "rel-label"; lb.textContent = r.label;
+          li.appendChild(lb);
+        }
+        var names = r.names || [];
+        if (!names.length) {
+          li.appendChild(document.createTextNode(r.text || ""));
+        } else {
+          names.forEach(function (n, i) {
+            if (i) li.appendChild(document.createTextNode("、"));
+            li.appendChild(hotWord(n));
+          });
+        }
+        ul.appendChild(li);
+      });
+      wrap.appendChild(ul);
+    }
+    return wrap;
+  }
+
+  // 名字能在名单里找到 → 做成可点的串门热词；找不到就只当普通文字
+  function hotWord(name) {
+    var target = resolveCat(name);
+    var el = document.createElement("span");
+    el.textContent = name;
+    if (target) {
+      el.className = "hot";
+      el.addEventListener("click", function () { jumpTo(target.name); });
+    }
+    return el;
   }
 
   function buildPara(txt) {
@@ -237,18 +364,14 @@
     var re = /\[\[([^\]]+)\]\]/g; var last = 0; var m;
     while ((m = re.exec(txt)) !== null) {
       if (m.index > last) p.appendChild(document.createTextNode(txt.slice(last, m.index)));
-      var hot = document.createElement("span"); hot.className = "hot"; hot.textContent = m[1];
-      hot.addEventListener("click", function () { jumpTo(m[1]); });
-      p.appendChild(hot);
+      p.appendChild(hotWord(m[1]));
       last = m.index + m[0].length;
     }
     if (last < txt.length) p.appendChild(document.createTextNode(txt.slice(last)));
     return p;
   }
   function jumpTo(name) {
-    var c = null, i;
-    for (i = 0; i < CATS.length; i++) if (CATS[i].name === name) { c = CATS[i]; break; }
-    if (!c) for (i = 0; i < CATS.length; i++) if (CATS[i].name.indexOf(name) !== -1) { c = CATS[i]; break; }
+    var c = resolveCat(name);
     // 串门是「去读 TA 的故事」，不再重放反应动效
     if (c) { state.current = c; markPetted(c.id); gotoStory(c); }
   }
@@ -295,8 +418,8 @@
     if (!cat) return;
     document.getElementById("cardName").textContent = cat.name;
     document.getElementById("cardTags").innerHTML = "<em>" + cat.color + "</em><em>" + cat.gender + "</em><em>" + MOOD_LABEL[cat.mood] + "</em>";
-    document.getElementById("cardWait").textContent = cat.adopted ? "TA 有家了" : "还在等家";
-    document.getElementById("cardWait").classList.toggle("home", !!cat.adopted);
+    document.getElementById("cardWait").textContent = (STATUS_TAG[cat.status] || {}).t || "还在等家";
+    document.getElementById("cardWait").classList.toggle("home", cat.status === "home");
     document.getElementById("cardQuote").innerHTML = "「" + cat.quote + "」";
     renderPhotoSlot(document.getElementById("cardPhoto"), cat);
     var me = state.me || { avatar: "avatar-1.webp", nick: "今天也想摸猫", intro: "" };
@@ -344,6 +467,8 @@
       ctx.fillStyle = color; ctx.textAlign = align || "left"; ctx.fillText(s, x, y);
     }
     function wrap(s, x, y, maxW, lh, size, color, align) {
+      // 量字前必须先把字体切到目标字号，否则按旧字号分行、按新字号渲染必然溢出
+      ctx.font = "700 " + size + "px 'Songti SC', serif";
       var chars = String(s).split("");
       var line = "", lines = [];
       for (var i = 0; i < chars.length; i++) { line += chars[i]; if (ctx.measureText(line).width > maxW) { lines.push(line.slice(0, -1)); line = chars[i]; } }
@@ -391,6 +516,7 @@
       // 右侧：标签 + 状态
       var tagY = 210, tagX = 336, tagMax = W - 336 - 50;
       var tags = [cat.color, cat.gender, MOOD_LABEL[cat.mood], cat.sterilized ? "已绝育" : ""].filter(Boolean);
+      ctx.font = "400 16px 'Songti SC', serif";
       tags.forEach(function (t) {
         ctx.strokeStyle = "#263f3644"; ctx.lineWidth = 1.5;
         var tw = ctx.measureText(t).width + 24;
@@ -398,7 +524,7 @@
         txt(t, tagX + tw / 2, tagY + 23, 16, "#52614e", "Songti SC", "center");
         tagY += 46;
       });
-      txt(cat.adopted ? "TA 有家了" : "还在等家", tagX, tagY + 12, 18, rust, "Songti SC", "left", 700);
+      txt((STATUS_TAG[cat.status] || {}).t || "还在等家", tagX, tagY + 12, 18, rust, "Songti SC", "left", 700);
 
       // 金句
       var qy = 540;
@@ -465,43 +591,129 @@
       link.href = dataUrl; link.download = "共鸣卡-" + cat.name + ".png"; link.click();
     });
   }
-  /* ---------- 图鉴 ---------- */
-  function renderWall() {
-    var grid = document.getElementById("wallGrid");
-    grid.innerHTML = "";
-    CATS.forEach(function (cat, idx) {
-      var card = document.createElement("div");
-      card.className = "wall-card" + (cat.family === "小队家族" ? " wide" : "");
-      var pm = document.createElement("span"); pm.className = "pawmark";
-      if (state.petted.indexOf(cat.id) !== -1) { pm.innerHTML = '<svg viewBox="0 0 24 24"><use href="#i-paw"/></svg>'; card.appendChild(pm); }
-      var ph = document.createElement("div"); ph.className = "ph";
-      var svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-      var use = document.createElementNS("http://www.w3.org/2000/svg", "use");
-      use.setAttribute("href", "#" + (SILSIL[cat.silhouette] || "i-cat-sit"));
-      svg.appendChild(use); ph.appendChild(svg);
-      card.appendChild(ph);
-      var h5 = document.createElement("h5"); h5.textContent = cat.name; card.appendChild(h5);
-      var sm = document.createElement("small");
-      sm.textContent = cat.color + " · " + cat.gender + (cat.family === "小队家族" ? " · 遇见即全家福" : "");
-      card.appendChild(sm);
-      card.addEventListener("click", function () {
-        state.current = cat; markPetted(cat.id); updateMeStrip(); gotoStory(cat);
-      });
-      grid.appendChild(card);
+  /* ---------- 猫猫手册（列表） ---------- */
+  var WALL_FILTERS = [
+    { id: "all", label: "全部", test: function () { return true; } },
+    { id: "wait", label: "还在等家", test: function (c) { return c.status === "wait"; } },
+    { id: "care", label: "寄养 · 司猫", test: function (c) { return c.status === "foster" || c.status === "shop"; } },
+    { id: "home", label: "已领养", test: function (c) { return c.status === "home"; } },
+    { id: "gone", label: "失踪 · 回喵星", test: function (c) { return c.status === "lost" || c.status === "star"; } }
+  ];
+  var wallFilter = "all";
+
+  function renderWallFilter() {
+    var wrap = document.getElementById("wallFilter");
+    wrap.innerHTML = "";
+    WALL_FILTERS.forEach(function (f) {
+      var n = CATS.filter(f.test).length;
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "wchip" + (f.id === wallFilter ? " on" : "");
+      b.textContent = f.label + " " + n;
+      b.addEventListener("click", function () { wallFilter = f.id; renderWallFilter(); renderWallBody(); });
+      wrap.appendChild(b);
     });
+  }
+
+  function renderWall() {
+    renderWallFilter();
+    renderWallBody();
+  }
+
+  function renderWallBody() {
+    var box = document.getElementById("wallSections");
+    box.innerHTML = "";
+    var cur = WALL_FILTERS.filter(function (f) { return f.id === wallFilter; })[0];
+    var list = CATS.filter(cur.test);
+
+    // 一、拆迁待安排（首页能摸到的 15 位）排最前
+    var pool = list.filter(function (c) { return c.pool; });
+    if (pool.length) {
+      box.appendChild(wallSection("拆迁待安排", "首页能摸到的 " + pool.length + " 位，优先安置", pool));
+    }
+    // 二、其余按家族分组
+    var rest = list.filter(function (c) { return !c.pool; });
+    var families = [];
+    rest.forEach(function (c) { if (c.family && families.indexOf(c.family) === -1) families.push(c.family); });
+    families.forEach(function (f) {
+      box.appendChild(wallSection(f, "", rest.filter(function (c) { return c.family === f; })));
+    });
+    var none = rest.filter(function (c) { return !c.family; });
+    if (none.length) box.appendChild(wallSection("其他住客", "档案里没写家族的", none));
+
+    if (!list.length) {
+      var empty = document.createElement("p");
+      empty.className = "wall-foot";
+      empty.textContent = "这一类暂时没有记录。";
+      box.appendChild(empty);
+    }
+  }
+
+  function wallSection(title, sub, cats) {
+    var sec = document.createElement("section");
+    sec.className = "wall-sec";
+    var h = document.createElement("h4");
+    h.className = "wall-sec-title";
+    h.innerHTML = '<svg viewBox="0 0 24 24"><use href="#i-paw"/></svg>';
+    h.appendChild(document.createTextNode(title));
+    var em = document.createElement("em");
+    em.textContent = cats.length + " 位";
+    h.appendChild(em);
+    sec.appendChild(h);
+    if (sub) {
+      var p = document.createElement("p");
+      p.className = "wall-sec-sub";
+      p.textContent = sub;
+      sec.appendChild(p);
+    }
+    var grid = document.createElement("div");
+    grid.className = "wall-grid";
+    cats.forEach(function (cat) { grid.appendChild(wallCard(cat)); });
+    sec.appendChild(grid);
+    return sec;
+  }
+
+  function wallCard(cat) {
+    var card = document.createElement("div");
+    card.className = "wall-card st-" + cat.status + (cat.silhouette === "family" ? " wide" : "");
+    if (state.petted.indexOf(cat.id) !== -1) {
+      var pm = document.createElement("span");
+      pm.className = "pawmark";
+      pm.innerHTML = '<svg viewBox="0 0 24 24"><use href="#i-paw"/></svg>';
+      card.appendChild(pm);
+    }
+    var tag = STATUS_TAG[cat.status];
+    if (tag) {
+      var bd = document.createElement("span");
+      bd.className = "badge";
+      bd.textContent = tag.t;
+      card.appendChild(bd);
+    }
+    var ph = document.createElement("div");
+    ph.className = "ph";
+    renderPhotoSlot(ph, cat);
+    card.appendChild(ph);
+    var h5 = document.createElement("h5"); h5.textContent = cat.name; card.appendChild(h5);
+    var sm = document.createElement("small");
+    sm.textContent = cat.color + " · " + cat.gender;
+    card.appendChild(sm);
+    card.addEventListener("click", function () {
+      state.current = cat; markPetted(cat.id); updateMeStrip(); gotoStory(cat);
+    });
+    return card;
   }
 
   /* ---------- 摸猫页身份条 + 遇见进度 ---------- */
   function updateMeStrip() {
     var strip = document.getElementById("meStrip");
     if (!strip) return;
-    var petted = state.petted.length;
-    var pct = Math.round(petted / CATS.length * 100);
+    var petted = state.petted.filter(function (id) { return POOL.some(function (c) { return c.id === id; }); }).length;
+    var pct = Math.round(petted / POOL.length * 100);
     strip.hidden = false;
     strip.innerHTML =
       '<span class="me-line"><svg viewBox="0 0 24 24"><use href="#i-paw"/></svg>' +
       (state.me ? "你好，" + state.me.nick + " · " : "") +
-      "已遇见 <b>" + petted + "</b>/" + CATS.length + " 位住客</span>" +
+      "已遇见 <b>" + petted + "</b>/" + POOL.length + " 位待安置小猫</span>" +
       '<span class="me-progress"><i style="width:' + pct + '%"></i></span>';
   }
 
@@ -525,7 +737,7 @@
         case "toCard": goCard(); break;
         case "saveCard": saveCard(); break;
         case "saveAgain": document.getElementById("cardPrev").style.display = ""; document.getElementById("savedWrap").hidden = true; break;
-        case "tab": onTab(t.dataset.tab); break;
+        case "tab": onTab(t.dataset.tab, t.dataset); break;
         case "back": back(); break;
       }
     });
@@ -556,6 +768,9 @@
 
     // 启动：停在封面；倒计时
     preload();
+    setText("poolCount", POOL.length);
+    setText("petAllCount", CATS.length);
+    setText("wallCount", CATS.length);
     var dl = document.getElementById("days-left");
     if (dl) dl.textContent = daysLeft();
     updateMeStrip();
@@ -589,8 +804,11 @@
     document.getElementById("cardPrev").style.display = "";
     push("v-card");
   }
-  function onTab(id) {
-    if (id === "v-wall") renderWall();
+  function onTab(id, ds) {
+    if (id === "v-wall") {
+      if (ds && ds.wallFilter && WALL_FILTERS.some(function (f) { return f.id === ds.wallFilter; })) wallFilter = ds.wallFilter;
+      renderWall();
+    }
     if (id === "v-pet") updateMeStrip();
     push(id);
   }

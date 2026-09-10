@@ -32,7 +32,7 @@ img{display:block;max-width:100%}
 .tabbar{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:100%;max-width:440px;z-index:60;display:flex;background:#f4ebd8f5;border-top:1px solid var(--line);padding:6px 6px calc(6px + env(safe-area-inset-bottom));backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);box-shadow:0 -6px 18px #263f3614}
 .tabbar .tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:44px;background:none;border:0;padding:4px 2px;color:#8d9078;font-family:var(--serif);font-size:10.5px;letter-spacing:1.5px;cursor:pointer;transition:color .2s}
 .tabbar .tab svg{width:21px;height:21px;fill:currentColor;opacity:.65;transition:opacity .2s}
-.tabbar .tab:first-child svg{fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.tabbar .tab:first-child svg,.tabbar .tab svg.ic-stroke{fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
 .tabbar .tab.active{color:var(--rust)}
 .tabbar .tab.active svg{opacity:1}
 .tabbar .tab:active{transform:translateY(1px)}
@@ -80,7 +80,7 @@ img{display:block;max-width:100%}
 
 /* ===== 3. 摸到瞬间（独立一页） =====
    名字与标签简介进入即显示，反应动效同时播一遍（时长收敛在 --cycle）；
-   演完自动进故事页，也可点「看看 TA 的故事」直接跳过。 */
+   演完不自动翻页：按钮点亮提示，用户自己点「看看 TA 的故事」进故事页。 */
 .react-stage{--cycle:3.2s;margin:12px 0 0;text-align:center}
 .react-art{position:relative;height:360px;height:min(44svh,360px);width:auto;aspect-ratio:372/762;margin:0 auto;overflow:hidden;background:#fbf4e4;border:1px solid #263f3622;box-shadow:0 8px 20px #263f361f}
 .react-art img{width:100%;height:100%;object-fit:cover;display:block;will-change:transform,clip-path}
@@ -96,6 +96,10 @@ img{display:block;max-width:100%}
 .react-narr{margin:11px auto 0;max-width:320px;font-family:var(--serif);font-size:13px;letter-spacing:1.5px;line-height:1.9;color:var(--ink)}
 .react-narr .line{display:block}
 .react-actions{margin-top:14px}
+/* 动效演完前：按钮安静等待；演完点亮为陶土红主按钮，轻轻呼吸提示人工点击 */
+.react-actions .btn{transition:background .3s,color .3s,border-color .3s}
+.react-actions .btn.ready{background:var(--rust);color:var(--cream);border-color:var(--rust);box-shadow:0 3px 0 #8a3d26;animation:ready-glow 1.9s ease-in-out infinite}
+@keyframes ready-glow{0%,100%{box-shadow:0 3px 0 #8a3d26}50%{box-shadow:0 3px 0 #8a3d26,0 0 0 7px rgba(170,77,49,.14)}}
 /* 矮屏：名字+简介+按钮要能一屏看完，反应图让出空间 */
 @media(max-height:760px){
   .react-stage{margin-top:8px}
@@ -159,6 +163,7 @@ img{display:block;max-width:100%}
 @media(prefers-reduced-motion:reduce){
   .stage-close .react-art img,.stage-shy .react-art img,.stage-gone .react-art img,
   .paw-fx,.speed-fx{animation-duration:.01s !important;animation-iteration-count:1 !important}
+  .react-actions .btn.ready{animation:none}
 }
 .story-head{margin:10px 0 0;text-align:center;position:relative}
 .story-name{font-family:var(--serif);font-size:30px;font-weight:900;letter-spacing:6px;margin:0}
@@ -195,7 +200,7 @@ img{display:block;max-width:100%}
 .card-rule:after{content:"";position:absolute;right:0;top:-2px;width:5px;height:5px;border-radius:50%;background:var(--pine)}
 .card-cat{display:flex;gap:14px;align-items:center}
 .card-cat .polaroid{width:88px;flex:none;background:#fffaf0;padding:6px 6px 18px;box-shadow:0 4px 10px #263f362e;transform:rotate(-2deg)}
-.card-cat .polaroid .ph{aspect-ratio:1;background:linear-gradient(160deg,#efe6cf,#e2d7ba);display:flex;align-items:center;justify-content:center;color:var(--pine)}
+.card-cat .polaroid .ph{position:relative;overflow:hidden;aspect-ratio:1;background:linear-gradient(160deg,#efe6cf,#e2d7ba);display:flex;align-items:center;justify-content:center;color:var(--pine)}
 .card-cat .polaroid .ph svg{width:64%;height:64%;fill:currentColor}
 .card-cat .polaroid span{position:absolute}
 .card-cat .meta{flex:1;min-width:0}
@@ -225,20 +230,55 @@ img{display:block;max-width:100%}
 .save-row .btn{flex:1}
 .save-note{margin:12px 0 0;text-align:center;font-size:9px;letter-spacing:1.5px;color:#8a8268;line-height:1.8}
 
-/* ===== 5. 图鉴 ===== */
-.wall-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px 14px;margin:20px 0 0}
+/* ===== 5. 猫猫手册（列表） ===== */
+/* 顶部筛选条：横向可滑，触控目标 ≥44px */
+.wall-filter{display:flex;gap:8px;margin:18px -27px 0;padding:0 27px 4px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.wall-filter::-webkit-scrollbar{display:none}
+.wchip{flex:none;min-height:44px;padding:0 15px;border:1.5px solid #263f3655;background:#f8efda99;border-radius:24px;font-family:var(--serif);font-size:12px;letter-spacing:1.5px;color:var(--ink);white-space:nowrap;cursor:pointer}
+.wchip.on{background:var(--pine);color:var(--cream);border-color:var(--pine)}
+.wchip:active{transform:translateY(1px)}
+/* 分组 */
+.wall-sec{margin-top:26px}
+.wall-sec-title{display:flex;align-items:center;gap:7px;font-family:var(--serif);font-size:17px;font-weight:900;letter-spacing:2.5px;color:var(--pine);margin:0;padding-bottom:8px;border-bottom:1px solid var(--line)}
+.wall-sec-title svg{width:15px;height:15px;fill:var(--ochre);flex:none}
+.wall-sec-title em{margin-left:auto;font-style:normal;font-size:10px;letter-spacing:1px;color:#8a8268;font-weight:400}
+.wall-sec-sub{margin:7px 0 0;font-size:10px;letter-spacing:1.5px;color:#8a8268}
+.wall-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px 14px;margin:16px 0 0}
 .wall-card{background:#fbf4e4;padding:9px 9px 12px;box-shadow:0 6px 16px #263f3622;position:relative;text-align:center;cursor:pointer}
 .wall-card:nth-child(odd){transform:rotate(-1.2deg)}
 .wall-card:nth-child(even){transform:rotate(1.2deg)}
-.wall-card .ph{aspect-ratio:1;background:linear-gradient(160deg,#efe6cf,#e2d7ba);display:flex;align-items:center;justify-content:center;color:var(--pine);margin-bottom:8px}
+.wall-card .ph{position:relative;aspect-ratio:1;background:linear-gradient(160deg,#efe6cf,#e2d7ba);display:flex;align-items:center;justify-content:center;color:var(--pine);margin-bottom:8px;overflow:hidden}
 .wall-card .ph svg{width:58%;height:58%;fill:currentColor}
-.wall-card h5{font-family:var(--serif);font-size:16px;letter-spacing:3px;margin:0;font-weight:900}
+.wall-card h5{font-family:var(--serif);font-size:16px;letter-spacing:2px;margin:0;font-weight:900;word-break:break-word}
 .wall-card small{display:block;font-size:8px;letter-spacing:1.5px;color:#8a8268;margin-top:3px}
-.wall-card .pawmark{position:absolute;top:6px;right:7px;width:20px;height:20px;color:var(--rust);transform:rotate(12deg)}
+.wall-card .pawmark{position:absolute;top:6px;right:7px;width:20px;height:20px;color:var(--rust);transform:rotate(12deg);z-index:2}
 .wall-card .pawmark svg{width:100%;height:100%;fill:currentColor}
 .wall-card.wide{grid-column:1 / -1}
 .wall-card.wide .ph{aspect-ratio:2.4/1}
-.wall-foot{margin:20px 0 0;text-align:center;font-family:var(--serif);font-size:11px;letter-spacing:2px;color:#7c806d;line-height:2}
+/* 状态角标 */
+.wall-card .badge{position:absolute;top:7px;left:6px;z-index:2;font-size:8px;letter-spacing:1px;padding:2px 7px;border-radius:10px;background:#fbf4e4e0;border:1px solid #263f3644;color:#52614e}
+.wall-card.st-wait .badge{border-color:#aa4d3199;color:var(--rust)}
+.wall-card.st-home .badge{border-color:#5c7a4f99;color:#5c7a4f}
+.wall-card.st-shop .badge,.wall-card.st-foster .badge{border-color:#b9853499;color:var(--ochre)}
+.wall-card.st-star .badge,.wall-card.st-lost .badge{border-color:#8d907899;color:#7c806d}
+/* 已经离开的：只把影像压灰，卡片本身仍是暖的 */
+.wall-card.st-star .ph,.wall-card.st-lost .ph{background:linear-gradient(160deg,#e9e5da,#dcd8cb)}
+.wall-card.st-star .ph svg,.wall-card.st-lost .ph svg{opacity:.42}
+.wall-card.st-star h5,.wall-card.st-lost h5{color:#5f6656}
+.wall-foot{margin:26px 0 0;text-align:center;font-family:var(--serif);font-size:11px;letter-spacing:2px;color:#7c806d;line-height:2}
+
+/* ===== 5b. 档案卡（表二里没有故事的猫） ===== */
+.archive{margin:6px 0 0}
+.archive-state{font-family:var(--serif);font-size:16px;line-height:1.9;letter-spacing:2px;text-align:center;color:var(--ink);margin:0;padding:14px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.archive-facts{display:grid;grid-template-columns:1fr 1fr;gap:12px 16px;margin:16px 0 0}
+.archive-facts div{display:flex;align-items:baseline;gap:8px}
+.archive-facts dt{flex:none;font-size:9px;letter-spacing:1.5px;color:#8a8268;min-width:34px}
+.archive-facts dd{margin:0;font-family:var(--serif);font-size:14px;letter-spacing:1px;color:var(--ink)}
+.archive-note{margin:12px 0 0;font-size:10px;letter-spacing:1px;color:#9a9684;line-height:1.8}
+.archive-rel-title{font-family:var(--serif);font-size:13px;letter-spacing:2.5px;color:var(--ochre);font-weight:700;margin:22px 0 0}
+.archive-rel{list-style:none;margin:10px 0 0;padding:0;border-top:1px solid var(--line)}
+.archive-rel li{display:flex;align-items:baseline;gap:9px;padding:9px 2px;border-bottom:1px solid var(--line);font-family:var(--serif);font-size:14px;letter-spacing:1px;color:var(--ink);line-height:1.8}
+.archive-rel .rel-label{flex:none;font-size:9px;letter-spacing:1.5px;color:#8a8268;min-width:52px}
 
 @media(max-width:360px){
   .view-inner{padding-left:20px;padding-right:20px}
@@ -252,6 +292,9 @@ img{display:block;max-width:100%}
 #storyArea{animation:fadein .5s ease both}
 /* 「有家了」绿色标签 */
 .tag-home,.wait.home{border-color:#5c7a4f;color:#5c7a4f}
+/* 其余现状标签 */
+.tag-star,.tag-lost{border-color:#8d9078aa;color:#7c806d}
+.tag-shop,.tag-foster{border-color:#b98534aa;color:var(--ochre)}
 /* 有照片时的照片位（绝对值铺满） */
 .story-portrait .ph img,.card-cat .polaroid .ph img,.wall-card .ph img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
 /* 摸猫页我的身份条 + 遇见进度 */
@@ -261,6 +304,8 @@ img{display:block;max-width:100%}
 .me-strip b{color:var(--rust)}
 .me-progress{display:block;width:58%;max-width:180px;height:4px;border-radius:2px;background:#263f361f;overflow:hidden}
 .me-progress i{display:block;height:100%;background:var(--rust);border-radius:2px;transition:width .45s ease}
+/* 摸猫页页脚提示：猫猫手册在列表页 */
+.pet-note{margin:20px 0 0;text-align:center;font-family:var(--serif);font-size:10px;letter-spacing:1.5px;line-height:2;color:#9a9684}
 /* 相册选图 */
 .album-has{border-color:var(--rust);border-style:solid}
 .album-has img{width:100%;height:100%;object-fit:cover;border-radius:50%}
@@ -323,4 +368,38 @@ img{display:block;max-width:100%}
   #v-cover .hero-sub{margin-top:8px}
   #v-cover .scene{margin-top:10px}
   #v-cover .invitation{padding-bottom:12px}
+}
+
+/* ===== 7. 联系我 ===== */
+/* 主告示：深松绿海报卡，像盖了枚承诺的印章 */
+.pledge{margin:22px 0 0;background:var(--pine);border-radius:4px;padding:26px 22px 24px;text-align:center;position:relative;transform:rotate(-.6deg);box-shadow:0 12px 28px #263f3633;overflow:hidden;isolation:isolate}
+.pledge:before{content:"";position:absolute;inset:7px;border:1px solid #f8efda55;border-radius:3px;pointer-events:none;z-index:1}
+.pledge>*{position:relative;z-index:2}
+.pledge-paw{position:absolute !important;z-index:0 !important;top:-16px;right:-12px;width:104px;height:104px;opacity:.08;transform:rotate(16deg)}
+.pledge-paw svg{width:100%;height:100%;fill:var(--cream)}
+.pledge-eyebrow{display:block;font-family:var(--serif);font-size:11px;letter-spacing:5px;color:var(--ochre)}
+.pledge-title{font-family:var(--serif);font-size:37px;font-weight:900;letter-spacing:8px;margin:7px 0 0;color:var(--cream);line-height:1.2}
+.pledge-underline{display:block;width:150px;height:8px;margin:5px auto 0}
+.pledge-underline path{fill:none;stroke:var(--ochre);stroke-width:3;stroke-linecap:round}
+.pledge-line{margin:12px 0 0;font-family:var(--serif);font-size:13px;letter-spacing:2.5px;line-height:2.1;color:#f8efdad9}
+/* 告示便签卡：两张交错轻斜，顶上压一枚圆图标 */
+.cnote{margin:30px 0 0;background:#fbf4e4;padding:20px 20px 22px;box-shadow:0 8px 22px #263f3624;position:relative;border-radius:3px}
+.cnote-home{transform:rotate(.5deg)}
+.cnote-mail{transform:rotate(-.5deg)}
+.cnote-ic{position:absolute;top:-18px;left:20px;width:42px;height:42px;border-radius:50%;background:var(--rust);color:var(--cream);display:flex;align-items:center;justify-content:center;box-shadow:0 5px 12px #aa4d3155}
+.cnote-ic svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.cnote h4{font-family:var(--serif);font-size:20px;font-weight:900;letter-spacing:3px;margin:12px 0 0;color:var(--pine)}
+.cnote p{font-family:var(--serif);font-size:13.5px;line-height:2;letter-spacing:1px;color:var(--ink);margin:10px 0 0}
+.cnote b.rust,.cnote .rust{color:var(--rust);font-weight:700}
+.cnote-tip{font-size:11px !important;letter-spacing:1.2px !important;color:#8a8268;line-height:1.9 !important}
+.cnote .btn{margin-top:16px;min-height:50px;font-size:16px;letter-spacing:2.5px}
+/* 分流联系：虚线信封框 */
+.mailway{margin-top:14px;border:1.5px dashed #b98534aa;border-radius:4px;padding:13px 15px 14px;background:#fffaf0}
+.mailway-label{display:flex;align-items:center;gap:6px;font-size:10px;letter-spacing:2.5px;color:var(--ochre)}
+.mailway-label svg{width:12px;height:12px;fill:var(--ochre)}
+.mailway p{margin-top:7px;font-size:13px;line-height:1.95}
+.contact-foot{margin:26px 0 4px;text-align:center;font-family:var(--serif);font-size:12px;letter-spacing:4px;color:#7c806d}
+@media(max-width:360px){
+  .pledge-title{font-size:32px;letter-spacing:6px}
+  .cnote{padding-left:16px;padding-right:16px}
 }

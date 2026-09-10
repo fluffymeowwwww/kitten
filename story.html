@@ -167,12 +167,13 @@
       </figure>
 
       <h2 class="view-title" style="font-size:24px">伸手，摸摸今天的小猫</h2>
-      <p class="view-sub">摸到谁，就读读谁的故事。<br>馆里 15 位住客，每一只都等概率出现。</p>
+      <p class="view-sub">摸到谁，就读读谁的故事。<br>这里 <b id="poolCount">15</b> 位是等着安置的小猫，每一只都等概率出现。</p>
 
       <div class="pet-actions">
         <button class="btn" type="button" data-action="draw"><svg viewBox="0 0 24 24"><use href="#i-paw"/></svg><span>伸手摸摸</span></button>
       </div>
       <p class="me-strip" id="meStrip" hidden></p>
+      <p class="pet-note">底部「猫猫手册」里，还收着 <span id="petAllCount">101</span> 份档案。</p>
     </div>
   </section>
 
@@ -225,8 +226,10 @@
         <div class="story-body" id="storyBody"></div>
 
         <div style="margin-top:22px">
-          <button class="btn btn-rust" type="button" data-action="toCard"><svg viewBox="0 0 24 24"><use href="#i-paw"/></svg><span>给 TA 留句话</span></button>
-          <div style="height:10px"></div>
+          <div id="toCardWrap">
+            <button class="btn btn-rust" type="button" data-action="toCard"><svg viewBox="0 0 24 24"><use href="#i-paw"/></svg><span>给 TA 留句话</span></button>
+            <div style="height:10px"></div>
+          </div>
           <button class="btn btn-ghost" type="button" data-action="draw">再摸一只</button>
         </div>
       </div>
@@ -295,15 +298,56 @@
     </div>
   </section>
 
-  <!-- ============ 6. 全部小猫（原图鉴） ============ -->
+  <!-- ============ 6. 猫猫手册 ============ -->
   <section class="view" id="v-wall">
     <div class="view-inner">
-      <h2 class="view-title">馆里的住客</h2>
+      <h2 class="view-title">猫猫手册</h2>
       <div class="title-orn"><i></i><svg viewBox="0 0 24 24"><use href="#i-paw"/></svg><i></i></div>
-      <p class="view-sub">15 位，每一只都有名字。<br>带 <svg style="width:11px;height:11px;display:inline;fill:var(--rust);vertical-align:-1px" viewBox="0 0 24 24"><use href="#i-paw"/></svg> 的，是你已经摸过的。</p>
+      <p class="view-sub">馆里记着 <b id="wallCount">101</b> 位。每一只都有名字。<br>带 <svg style="width:11px;height:11px;display:inline;fill:var(--rust);vertical-align:-1px" viewBox="0 0 24 24"><use href="#i-paw"/></svg> 的，是你已经摸过的。</p>
 
-      <div class="wall-grid" id="wallGrid"></div>
-      <p class="wall-foot">点任意一只，读读 TA 的故事。<br>它们还不知道，家要没了——但可以先被记住。</p>
+      <div class="wall-filter" id="wallFilter" role="tablist" aria-label="按现状筛选"></div>
+      <div id="wallSections"></div>
+      <p class="wall-foot">点任意一只，读读 TA 的故事或档案。<br>它们还不知道，家要没了——但可以先被记住。</p>
+    </div>
+  </section>
+
+  <!-- ============ 7. 联系我 ============ -->
+  <section class="view" id="v-contact">
+    <div class="view-inner">
+      <h2 class="view-title">联系我</h2>
+      <div class="title-orn"><i></i><svg viewBox="0 0 24 24"><use href="#i-paw"/></svg><i></i></div>
+      <p class="view-sub">如果你也想为它们做点什么——<br>这里是找到我们的方式。</p>
+
+      <!-- 主告示：领养代替购买 -->
+      <section class="pledge" aria-label="领养代替购买">
+        <span class="pledge-paw" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#i-paw"/></svg></span>
+        <span class="pledge-eyebrow">请把这句话放在心上</span>
+        <h3 class="pledge-title">领养代替购买</h3>
+        <svg class="pledge-underline" viewBox="0 0 120 8" aria-hidden="true"><path d="M3 5 Q40 1 75 4 T117 3"/></svg>
+        <p class="pledge-line">用领养终止流浪，<br>让每一次喜欢，都通向一个家。</p>
+      </section>
+
+      <!-- 告示一：想给 TA 一个家 -->
+      <article class="cnote cnote-home">
+        <span class="cnote-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5"/><path d="M5.5 9.6V20h13V9.6"/><path d="M10 20v-5.4h4V20"/></svg></span>
+        <h4>想给 TA 一个家？</h4>
+        <p>「猫猫手册」里标着 <b class="rust">还在等家</b> 的小猫，都在等一位认真负责的家人。</p>
+        <p class="cnote-tip">领养前请想清楚：十几年的陪伴、生病的花费、搬家也不放弃。</p>
+        <button class="btn btn-rust" type="button" data-action="tab" data-tab="v-wall" data-wall-filter="wait"><span>去看看等家的小猫</span></button>
+      </article>
+
+      <!-- 告示二：群护园区分流 -->
+      <article class="cnote cnote-mail">
+        <span class="cnote-ic" aria-hidden="true"><svg viewBox="0 0 24 24"><rect x="3" y="5.5" width="18" height="13" rx="2"/><path d="m4 7.5 8 5.5 8-5.5"/></svg></span>
+        <h4>群护园区 · 愿意分流</h4>
+        <p>同创汇拆迁在即，小猫们急需新的安置点。<br>如果你所在的 <b class="rust">小区 / 园区 / 校园</b> 有群护志愿者，愿意分流接收几只——</p>
+        <div class="mailway">
+          <span class="mailway-label"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-paw"/></svg>请这样找到我们</span>
+          <p>在这条小红书笔记的<b>评论区留言</b>，或直接<b>私信笔记作者</b>，每一条我们都会看到。</p>
+        </div>
+      </article>
+
+      <p class="contact-foot">看见，就是改变的开始。</p>
     </div>
   </section>
 
@@ -321,7 +365,11 @@
   </button>
   <button class="tab" type="button" data-action="tab" data-tab="v-wall">
     <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-cat-trio"/></svg>
-    <span>查看全部小猫</span>
+    <span>猫猫手册</span>
+  </button>
+  <button class="tab" type="button" data-action="tab" data-tab="v-contact">
+    <svg class="ic-stroke" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5.5" width="18" height="13" rx="2"/><path d="m4 7.5 8 5.5 8-5.5"/></svg>
+    <span>联系我</span>
   </button>
 </nav>
 
