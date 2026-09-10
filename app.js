@@ -444,149 +444,245 @@
       i.src = src;
     });
   }
+  /* 导出卡片状态色：与 DOM 预览卡的角标配色一致 */
+  var CARD_STATUS_COLOR = { wait: "#aa4d31", home: "#5c7a4f", star: "#7c806d", lost: "#7c806d", shop: "#b98534", foster: "#b98534" };
   function saveCard() {
     var cat = state.current; if (!cat) return;
     var me = state.me || { avatar: "avatar-1.webp", nick: "今天也想摸猫", intro: "" };
-    var W = 750, H = 1100;
+    // 3:4 明信片，与页面里的 DOM 预览卡同一套版式（DOM 卡 330 宽，导出缩放 2.27 倍）
+    var W = 750, H = 1000;
+    var L = 50, R = 700;                       // 内容左右界
     var cv = document.getElementById("cardCanvas");
     cv.width = W; cv.height = H;
     var ctx = cv.getContext("2d");
-    var pine = "#263f36", rust = "#aa4d31", ochre = "#b98534", cream = "#f8efda", ink = "#3a3326";
-
-    ctx.fillStyle = "#fbf4e4"; ctx.fillRect(0, 0, W, H);
-    ctx.strokeStyle = pine; ctx.lineWidth = 6; ctx.strokeRect(14, 14, W - 28, H - 28);
-    ctx.strokeStyle = pine; ctx.lineWidth = 2; ctx.globalAlpha = .6; ctx.strokeRect(26, 26, W - 52, H - 52); ctx.globalAlpha = 1;
+    var pine = "#263f36", rust = "#aa4d31", ochre = "#b98534", ink = "#3a3326", muted = "#8a8268";
+    var SERIF = "'Songti SC','STSong',serif";
 
     function roundRect(x, y, w, h, r) {
       ctx.beginPath();
       ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
       ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
     }
-    function txt(s, x, y, size, color, font, align, weight) {
-      ctx.font = (weight || 400) + " " + size + "px " + font + ", 'Songti SC', serif";
-      ctx.fillStyle = color; ctx.textAlign = align || "left"; ctx.fillText(s, x, y);
+    function setFont(size, weight, ls) {
+      ctx.font = (weight || 400) + " " + size + "px " + SERIF;
+      try { ctx.letterSpacing = ls || "0px"; } catch (e) {}   // 老浏览器忽略
     }
-    function wrap(s, x, y, maxW, lh, size, color, align) {
-      // 量字前必须先把字体切到目标字号，否则按旧字号分行、按新字号渲染必然溢出
-      ctx.font = "700 " + size + "px 'Songti SC', serif";
-      var chars = String(s).split("");
-      var line = "", lines = [];
-      for (var i = 0; i < chars.length; i++) { line += chars[i]; if (ctx.measureText(line).width > maxW) { lines.push(line.slice(0, -1)); line = chars[i]; } }
-      lines.push(line);
-      var ax = x;
-      lines.forEach(function (l, idx) {
-        if (align === "center") ax = W / 2;
-        txt(l, ax, y + idx * lh, size, color, "Songti SC", align === "center" ? "center" : "left", 700);
+    function txt(s, x, y, size, color, align, weight, ls) {
+      setFont(size, weight, ls);
+      ctx.fillStyle = color; ctx.textAlign = align || "left"; ctx.textBaseline = "alphabetic";
+      ctx.fillText(s, x, y);
+    }
+    // 先设字体再量字分行（旧版踩过字号错位导致溢出的坑）；含中文避头尾，与浏览器换行一致
+    function wrapLines(s, maxW, size, weight, ls) {
+      setFont(size, weight || 700, ls);
+      var CL = "」』，。！？、；：）)】…—";  // 不可出现在行首
+      var OP = "「『（(【";                   // 不可出现在行尾
+      var chars = String(s).split(""), line = "", lines = [];
+      chars.forEach(function (ch) {
+        if (line && ctx.measureText(line + ch).width > maxW) {
+          if (CL.indexOf(ch) >= 0) {
+            // 闭合标点挂回上一行；把上一行末尾第一个非标点字挪到新行
+            var k = line.length - 1;
+            while (k > 0 && CL.indexOf(line[k]) >= 0) k--;
+            lines.push(line.slice(0, k));
+            line = line.slice(k) + ch;
+          } else {
+            lines.push(line);
+            line = ch;
+          }
+        } else {
+          line += ch;
+        }
       });
-      return lines.length;
-    }
-    // 只测量分行，不绘制（用于先算高度再画框）
-    function wrapLines(s, maxW, size, weight) {
-      ctx.font = (weight || 700) + " " + size + "px 'Songti SC', serif";
-      var chars = String(s).split("");
-      var line = "", lines = [];
-      for (var i = 0; i < chars.length; i++) {
-        line += chars[i];
-        if (ctx.measureText(line).width > maxW) { lines.push(line.slice(0, -1)); line = chars[i]; }
+      if (line) lines.push(line);
+      // 行尾的开始标点挪到下一行行首
+      for (var i = 0; i < lines.length - 1; i++) {
+        while (lines[i] && OP.indexOf(lines[i].slice(-1)) >= 0) {
+          lines[i + 1] = lines[i].slice(-1) + lines[i + 1];
+          lines[i] = lines[i].slice(0, -1);
+        }
       }
-      lines.push(line);
-      return lines;
+      return lines.filter(Boolean);
+    }
+    // 沿圆弧写字（邮戳环排）。角度以 canvas 顺时针计，270° 为正上方
+    function arcText(s, cx, cy, r, startDeg, endDeg, size, color) {
+      var chars = String(s).split(""), n = chars.length;
+      ctx.save();
+      setFont(size, 700, "1px");
+      ctx.fillStyle = color; ctx.textAlign = "center";
+      for (var i = 0; i < n; i++) {
+        var a = (startDeg + (endDeg - startDeg) * (n === 1 ? .5 : i / (n - 1))) * Math.PI / 180;
+        ctx.save();
+        ctx.translate(cx + r * Math.cos(a), cy + r * Math.sin(a));
+        ctx.rotate(a + Math.PI / 2);
+        ctx.fillText(chars[i], 0, 0);
+        ctx.restore();
+      }
+      ctx.restore();
+    }
+    // 大圆邮戳（对应 DOM 的 #i-postmark，压在留言框左下）
+    function drawPostmark(cx, cy, r) {
+      ctx.save();
+      ctx.translate(cx, cy); ctx.rotate(-Math.PI / 13);
+      ctx.globalAlpha = .5;
+      ctx.strokeStyle = ochre; ctx.fillStyle = ochre;
+      ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI * 2); ctx.stroke();
+      ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(0, 0, r - 13, 0, Math.PI * 2); ctx.stroke();
+      arcText("同创汇猫咪故事馆 · 秋日来信 · VOL.01", 0, 0, r - 8, 152, 388, 12.5, ochre);
+      txt("已遇见", 0, 4, 22, ochre, "center", 700, "3px");
+      txt("2026 · AUTUMN", 0, 27, 12, ochre, "center", 400);
+      ctx.restore();
     }
 
-    // 顶部栏
-    txt("同创汇猫咪故事馆", 54, 84, 22, pine, "Songti SC", "left", 700);
-    txt("VOL.01 · 秋日来信 · 遇见纪念", 54, 112, 14, "#7c806d", "Songti SC", "left");
-    // 分割线
-    ctx.strokeStyle = pine; ctx.globalAlpha = .5; ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.moveTo(54, 146); ctx.lineTo(W - 54, 146); ctx.stroke(); ctx.globalAlpha = 1;
+    // 外框双线
+    ctx.fillStyle = "#fbf4e4"; ctx.fillRect(0, 0, W, H);
+    ctx.strokeStyle = pine; ctx.lineWidth = 6; ctx.strokeRect(14, 14, W - 28, H - 28);
+    ctx.globalAlpha = .55; ctx.lineWidth = 2; ctx.strokeRect(26, 26, W - 52, H - 52); ctx.globalAlpha = 1;
 
-    // 猫照片 / 剪影 + 名字
-    var imgTask = cat.has_photo && cat.photo
+    // 图片素材：猫照片 / 矢量剪影 / 头像 / 邮票
+    var catImgTask = cat.has_photo && cat.photo
       ? loadImg("assets/cats/" + cat.photo)
       : loadImg("data:image/svg+xml;charset=utf-8," + encodeURIComponent(SILSVG[cat.silhouette || "sit"].replace(/\{C\}/g, pine)));
-    return imgTask.then(function (im) {
-      // 左侧拍立得
-      ctx.fillStyle = "#fffaf0"; ctx.fillRect(54, 176, 250, 330); ctx.strokeStyle = "#26281c22"; ctx.strokeRect(54, 176, 250, 330);
-      ctx.save(); ctx.beginPath(); ctx.rect(54, 176, 250, 260); ctx.clip();
-      if (cat.has_photo) { var s = Math.max(250 / im.width, 260 / im.height); ctx.drawImage(im, 54 + (250 - im.width * s) / 2, 176 + (260 - im.height * s) / 2, im.width * s, im.height * s); }
-      else { var ds = 250; ctx.drawImage(im, 54 + (250 - ds) / 2, 176 + (260 - ds) / 2 + 14, ds, ds); }
-      ctx.restore();
-      txt("·" + cat.name + "·", 179, 496, 24, ink, "Songti SC", "center", 700);
+    return Promise.all([catImgTask, loadImg("assets/" + me.avatar), loadImg("assets/stamp.webp")])
+    .then(function (rs) {
+      var im = rs[0], avatar = rs[1], stamp = rs[2];
 
-      // 右侧：标签 + 状态
-      var tagY = 210, tagX = 336, tagMax = W - 336 - 50;
-      var tags = [cat.color, cat.gender, MOOD_LABEL[cat.mood], cat.sterilized ? "已绝育" : ""].filter(Boolean);
-      ctx.font = "400 16px 'Songti SC', serif";
-      tags.forEach(function (t) {
-        ctx.strokeStyle = "#263f3644"; ctx.lineWidth = 1.5;
-        var tw = ctx.measureText(t).width + 24;
-        roundRect(tagX, tagY, tw, 34, 17); ctx.stroke();
-        txt(t, tagX + tw / 2, tagY + 23, 16, "#52614e", "Songti SC", "center");
-        tagY += 46;
-      });
-      txt((STATUS_TAG[cat.status] || {}).t || "还在等家", tagX, tagY + 12, 18, rust, "Songti SC", "left", 700);
-
-      // 金句
-      var qy = 540;
-      txt("—— TA 的故事 ——", W / 2, qy, 15, ochre, "Songti SC", "center");
-      var qLines = wrap(cat.quote, W / 2, qy + 42, W - 140, 42, 30, ink, "center");
-      qy += 42 + qLines * 42 + 12;
-
-      // 留言区：卡片上留足位置，是这张卡片的主角之一
-      var saySize = 30, sayLH = 46;
-      var sayLines = wrapLines("「" + state.say + "」", W - 280, saySize, 700);
-      var boxX = 70, boxW = W - 140;
-      var boxY = qy;
-      var boxH = 58 + sayLines.length * sayLH + 20;
+      /* —— 页眉：馆名 + 期号 + 邮票 —— */
+      txt("同创汇猫咪故事馆", L, 84, 27, pine, "left", 700, "2px");
+      txt("VOL.01 · 秋日来信 · 遇见纪念", L, 116, 17, "#7c806d", "left");
       ctx.save();
-      ctx.strokeStyle = "#b98534cc"; ctx.lineWidth = 2; ctx.setLineDash([7, 7]);
-      roundRect(boxX, boxY, boxW, boxH, 10); ctx.stroke();
+      ctx.translate(W - 50, 40); ctx.rotate(Math.PI / 26);
+      ctx.shadowColor = "rgba(38,63,54,.25)"; ctx.shadowBlur = 10; ctx.shadowOffsetY = 4;
+      ctx.drawImage(stamp, -132, 0, 132, 132);
       ctx.restore();
-      txt("我想对 TA 说", boxX + 26, boxY + 36, 15, ochre, "Songti SC", "left");
+      // 分割线 + 末端小圆点
+      ctx.strokeStyle = pine; ctx.globalAlpha = .5; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(L, 142); ctx.lineTo(R, 142); ctx.stroke(); ctx.globalAlpha = 1;
+      ctx.fillStyle = pine;
+      ctx.beginPath(); ctx.arc(R, 140, 3.5, 0, Math.PI * 2); ctx.fill();
+
+      /* —— 猫区：小拍立得 + 右侧大名/标签（对应 .card-cat） —— */
+      // 拍立得：微旋转、白边、落影；底部留白条但不写名字（名字在右侧）
+      var pcx = 150, pcy = 273, pw = 200, pTop = 14, pSide = 14, pPhoto = 172, pBottom = 36;
+      ctx.save();
+      ctx.translate(pcx, pcy); ctx.rotate(-2 * Math.PI / 180);
+      ctx.shadowColor = "rgba(38,63,54,.25)"; ctx.shadowBlur = 20; ctx.shadowOffsetY = 10;
+      ctx.fillStyle = "#fffaf0"; ctx.fillRect(-pw / 2, -111, pw, pTop + pPhoto + pBottom);
+      ctx.shadowColor = "transparent";
+      ctx.beginPath(); ctx.rect(-pw / 2 + pSide, -111 + pTop, pPhoto, pPhoto); ctx.clip();
+      if (cat.has_photo) {
+        var s = Math.max(pPhoto / im.width, pPhoto / im.height);
+        ctx.drawImage(im, -im.width * s / 2, -111 + pTop + (pPhoto - im.height * s) / 2, im.width * s, im.height * s);
+      } else {
+        var ds = pPhoto * .64;
+        ctx.drawImage(im, -ds / 2, -111 + pTop + (pPhoto - ds) / 2, ds, ds);
+      }
+      ctx.restore();
+
+      // 大名（超长自动缩档）
+      var nameX = 282, nameSize = 50;
+      setFont(nameSize, 900, "4px");
+      while (ctx.measureText(cat.name).width > R - nameX && nameSize > 36) {
+        nameSize -= 3; setFont(nameSize, 900, "4px");
+      }
+      txt(cat.name, nameX, 240, nameSize, pine, "left", 900, "4px");
+
+      // 标签行：花色 / 性别 / 亲人度（与 DOM #cardTags 一致，3 枚，自动换行）
+      var tagList = [cat.color, cat.gender, MOOD_LABEL[cat.mood]].filter(Boolean);
+      var tx = nameX, ty = 268, th = 38, gapX = 10;
+      tagList.forEach(function (t) {
+        setFont(18, 400);
+        var tw = ctx.measureText(t).width + 40;
+        if (tx + tw > R) { tx = nameX; ty += th + 10; }
+        ctx.fillStyle = "rgba(248,239,218,.6)";
+        roundRect(tx, ty, tw, th, 19); ctx.fill();
+        ctx.strokeStyle = "rgba(38,63,54,.27)"; ctx.lineWidth = 1.5; ctx.stroke();
+        txt(t, tx + tw / 2, ty + 25, 18, "#52614e", "center");
+        tx += tw + gapX;
+      });
+
+      // 状态：旋转小印章签（对应 .wait，颜色随状态）
+      var stLabel = (STATUS_TAG[cat.status] || STATUS_TAG.wait).t;
+      var stColor = CARD_STATUS_COLOR[cat.status] || rust;
+      var stY = ty + th + 20;
+      setFont(18, 700, "2px");
+      var sw = ctx.measureText(stLabel).width + 32;
+      ctx.save();
+      ctx.translate(nameX + sw / 2, stY + 19); ctx.rotate(-3 * Math.PI / 180);
+      ctx.strokeStyle = stColor; ctx.lineWidth = 2;
+      roundRect(-sw / 2, -19, sw, 38, 7); ctx.stroke();
+      txt(stLabel, 0, 6, 18, stColor, "center", 700, "2px");
+      ctx.restore();
+
+      /* —— 金句：居中粗体，自带「」，无眉题（对应 .card-quote） —— */
+      var qSize = 34, qLH = 54, qTop = 436;
+      var qLines = wrapLines("「" + cat.quote + "」", R - L, qSize, 700, "1px");
+      qLines.forEach(function (l, i) {
+        txt(l, W / 2, qTop + i * qLH, qSize, ink, "center", 700, "1px");
+      });
+      var quoteBottom = qTop + qLines.length * qLH;
+
+      /* —— 留言框：灰虚线、奶白底；高度弹性吃掉剩余空间（对应 .card-saybox） —— */
+      var boxX = L, boxW = R - L, boxY = quoteBottom + 26, boxBottom = 778;
+      var boxH = boxBottom - boxY;
+      ctx.fillStyle = "#fffaf0";
+      roundRect(boxX, boxY, boxW, boxH, 8); ctx.fill();
+      ctx.save();
+      ctx.strokeStyle = "rgba(38,63,54,.28)"; ctx.lineWidth = 2; ctx.setLineDash([10, 8]);
+      roundRect(boxX, boxY, boxW, boxH, 8); ctx.stroke();
+      ctx.restore();
+
+      // 大圆邮戳先画，文字压在它上面；整体落在标签以下，避免与标签打架
+      drawPostmark(110, boxBottom - 74, 72);
+
+      // 留言文字：标签固定框内左上，正文在标签以下区域垂直居中
+      var saySize = 36, sayLH = 58;
+      var sayLines = wrapLines(state.say, boxW - 64, saySize, 700, "1px");
+      txt("我想对 TA 说", boxX + 28, boxY + 42, 18, ochre, "left", 400, "2px");
+      var sayTop = boxY + 72, sayBottom = boxBottom - 26;
+      var firstBase = sayTop + Math.max(0, (sayBottom - sayTop - sayLines.length * sayLH) / 2) + saySize * .82;
       sayLines.forEach(function (l, i) {
-        txt(l, W / 2, boxY + 76 + i * sayLH, saySize, ink, "Songti SC", "center", 700);
+        txt(l, W / 2, firstBase + i * sayLH, saySize, ink, "center", 700, "1px");
       });
-      txt("—— " + me.nick, boxX + boxW - 30, boxY + boxH - 18, 17, "#8a8268", "Songti SC", "right");
-      // 留言框右上角压一枚小章，像盖过印
-      ctx.save();
-      ctx.translate(boxX + boxW - 12, boxY + 12); ctx.rotate(-Math.PI / 12);
-      ctx.strokeStyle = "#b98534aa"; ctx.lineWidth = 2;
-      ctx.beginPath(); ctx.arc(0, 0, 33, 0, Math.PI * 2); ctx.stroke();
-      ctx.beginPath(); ctx.arc(0, 0, 28, 0, Math.PI * 2); ctx.stroke();
-      ctx.fillStyle = "#b98534"; ctx.textAlign = "center";
-      ctx.font = "700 15px 'Songti SC', serif";
-      ctx.fillText("已遇见", 0, 6);
-      ctx.restore();
-      var saveY = boxY + boxH + 34;
+      // 金色引号：开在首行前、收在末行后
+      setFont(saySize, 700);
+      var wFirst = ctx.measureText(sayLines[0]).width;
+      var wLast = ctx.measureText(sayLines[sayLines.length - 1]).width;
+      var wBr = ctx.measureText("「").width;
+      txt("「", W / 2 - wFirst / 2 - wBr / 2 - 1, firstBase, saySize, ochre, "center", 700);
+      txt("」", W / 2 + wLast / 2 + wBr / 2 + 1, firstBase + (sayLines.length - 1) * sayLH, saySize, ochre, "center", 700);
 
-      // 底部：头像 + 简介 + 倒计时 + 右上角邮票
-      return Promise.all([loadImg("assets/" + me.avatar), loadImg("assets/stamp.webp")]).then(function (rs) {
-        var av = rs[0], st = rs[1];
-        // 右上角邮票
-        ctx.save(); ctx.translate(W - 122, 62); ctx.rotate(Math.PI / 40); ctx.drawImage(st, 0, 0, 84, 84); ctx.restore();
-        var ax = 54, ay = saveY;
-        ctx.save(); ctx.beginPath(); ctx.arc(ax + 34, ay + 34, 34, 0, Math.PI * 2); ctx.clip();
-        var avs = Math.max(68 / av.width, 68 / av.height); ctx.drawImage(av, ax + 34 - av.width * avs / 2, ay + 34 - av.height * avs / 2, av.width * avs, av.height * avs);
-        ctx.restore();
-        ctx.strokeStyle = ochre; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(ax + 34, ay + 34, 34, 0, Math.PI * 2); ctx.stroke();
-        txt(me.nick, ax + 88, ay + 32, 24, ink, "Songti SC", "left", 700);
-        txt(me.intro || "来摸猫的", ax + 88, ay + 58, 16, "#8a8268", "Songti SC", "left");
-        txt(String(daysLeft()), W - 90, ay + 40, 48, rust, "Georgia", "right", 700);
-        txt("天后拆迁", W - 42, ay + 48, 16, "#8a8268", "Songti SC", "right");
-        return true;
-      });
-    }).then(function () {
-      // 底部小字
-      txt("距离同创汇拆迁还有 " + daysLeft() + " 天，在 TA 找到家之前，请记得 TA", W / 2, H - 34, 15, "#8a8268", "Songti SC", "center");
-    }).then(function () {
+      /* —— 虚线分隔 —— */
+      ctx.save();
+      ctx.strokeStyle = "rgba(38,63,54,.28)"; ctx.lineWidth = 2; ctx.setLineDash([10, 8]);
+      ctx.beginPath(); ctx.moveTo(L, 806); ctx.lineTo(R, 806); ctx.stroke();
+      ctx.restore();
+
+      /* —— 页脚：头像 + 署名 + 倒计时（对应 .card-foot） —— */
+      var acx = 96, acy = 874, ar = 46;
+      ctx.save();
+      ctx.beginPath(); ctx.arc(acx, acy, ar, 0, Math.PI * 2); ctx.clip();
+      var as = Math.max(ar * 2 / avatar.width, ar * 2 / avatar.height);
+      ctx.drawImage(avatar, acx - avatar.width * as / 2, acy - avatar.height * as / 2, avatar.width * as, avatar.height * as);
+      ctx.restore();
+      ctx.strokeStyle = ochre; ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.arc(acx, acy, ar, 0, Math.PI * 2); ctx.stroke();
+      txt(me.nick, 160, 864, 27, ink, "left", 700, "1px");
+      txt(me.intro || "路过同创汇，来看看猫", 160, 898, 18, muted, "left");
+      txt(String(daysLeft()), R, 876, 52, rust, "right", 700);
+      txt("天后拆迁", R, 902, 16, muted, "right");
+
+      /* —— 底边小字 —— */
+      txt("距离同创汇拆迁还有 " + daysLeft() + " 天，在 TA 找到家之前，请记得 TA", W / 2, 956, 15, muted, "center");
+
       // 导出
       var dataUrl = cv.toDataURL("image/png");
       var img = document.getElementById("savedImg");
       img.src = dataUrl;
       document.getElementById("savedWrap").hidden = false;
-      var cardPrev = document.getElementById("cardPrev");
-      cardPrev.style.display = "none";
-      // 下载
+      document.getElementById("cardPrev").style.display = "none";
       var link = document.getElementById("downloadLink");
       link.href = dataUrl; link.download = "共鸣卡-" + cat.name + ".png"; link.click();
     });
