@@ -126,39 +126,7 @@
     </section>
   </section>
 
-  <!-- ============ 1. 入馆登记（首次） ============ -->
-  <section class="view" id="v-welcome">
-    <div class="view-inner">
-      <h2 class="view-title">留个名字吧</h2>
-      <div class="title-orn"><i></i><svg viewBox="0 0 24 24"><use href="#i-paw"/></svg><i></i></div>
-      <p class="view-sub">你写的留言要有个署名。<br>这个名字和头像，会一起印在共鸣卡上。</p>
-
-      <div class="field">
-        <label>选一个头像（也可以用自己的照片）</label>
-        <div class="avatar-pick" id="avatarPick"></div>
-      </div>
-
-      <div class="field">
-        <label>怎么称呼你？</label>
-        <input type="text" id="nickName" value="今天也想摸猫" maxlength="10" aria-label="昵称">
-      </div>
-      <div class="field">
-        <label>一句话介绍自己（可选）</label>
-        <input type="text" id="intro" value="路过同创汇，来看看猫" maxlength="20" aria-label="简介">
-        <p class="field-hint">这句话会印在你的共鸣卡上。</p>
-      </div>
-
-      <div style="margin-top:24px">
-        <button class="btn btn-rust" type="button" data-action="enter"><svg viewBox="0 0 24 24"><use href="#i-paw"/></svg><span>下一步 · 给 TA 写留言</span></button>
-      </div>
-      <p class="privacy-note">
-        <svg viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
-        登记信息只存在你的手机里
-      </p>
-    </div>
-  </section>
-
-  <!-- ============ 2. 摸猫（主入口） ============ -->
+  <!-- ============ 1. 摸猫（主入口） ============ -->
   <section class="view" id="v-pet">
     <div class="view-inner">
       <figure class="pet-hero">
@@ -177,7 +145,7 @@
     </div>
   </section>
 
-  <!-- ============ 3. 摸到瞬间（名字与简介立即可见，反应动效照播一遍） ============ -->
+  <!-- ============ 2. 摸到瞬间（名字与简介立即可见，反应动效照播一遍） ============ -->
   <section class="view" id="v-react">
     <div class="view-inner">
       <div class="react-stage" id="reactStage">
@@ -207,7 +175,7 @@
     </div>
   </section>
 
-  <!-- ============ 4. 故事 ============ -->
+  <!-- ============ 3. 故事 ============ -->
   <section class="view" id="v-story">
     <div class="view-inner">
       <div class="reaction-done" id="storyArea">
@@ -227,7 +195,7 @@
 
         <div style="margin-top:22px">
           <div id="toCardWrap">
-            <button class="btn btn-rust" type="button" data-action="toCard"><svg viewBox="0 0 24 24"><use href="#i-paw"/></svg><span>给 TA 留句话</span></button>
+            <button class="btn btn-rust" type="button" data-action="toCard"><svg viewBox="0 0 24 24"><use href="#i-paw"/></svg><span>说说我和 TA 的故事</span></button>
             <div style="height:10px"></div>
           </div>
           <button class="btn btn-ghost" type="button" data-action="draw">再摸一只</button>
@@ -236,15 +204,34 @@
     </div>
   </section>
 
-  <!-- ============ 5. 留言 + 共鸣卡 ============ -->
+  <!-- ============ 4. 故事书写 + 共鸣卡 ============ -->
   <section class="view" id="v-card">
     <div class="view-inner">
-      <h2 class="view-title" style="font-size:23px">想对 TA 说点什么？</h2>
-      <p class="view-sub">选一句，或者自己写。<br>这句话会印在卡片上，跟着 TA 的故事一起被带走。</p>
+      <h2 class="view-title" style="font-size:23px">说说和 TA 的故事</h2>
+      <p class="view-sub">哪怕只有一面之缘，也算是一个故事。<br>点个开头接着写，两三句就好。</p>
 
       <div class="say-chips" id="sayChips"></div>
       <div class="say-input">
-        <input type="text" id="sayInput" placeholder="或者，自己写一句……" maxlength="24" aria-label="留言">
+        <textarea id="sayInput" rows="3" maxlength="50" placeholder="或者，自己写两句和 TA 的故事……" aria-label="我和 TA 的故事"></textarea>
+        <span class="say-count"><b id="sayCount">0</b>/50</span>
+      </div>
+
+      <!-- 署名条：默认 momo，想改点开就地改名（头像固定，无登记页） -->
+      <div class="me-edit">
+        <button type="button" class="me-edit-bar" id="meEditBar" aria-expanded="false" aria-controls="meEditPanel">
+          <span class="me-edit-avatar"><img src="assets/avatar-3.webp" alt="你的头像"></span>
+          <span class="me-edit-text">
+            <b>你的昵称：<em id="meEditNick">momo</em></b>
+          </span>
+          <span class="me-edit-act" id="meEditAct">改一下</span>
+        </button>
+        <div class="me-edit-panel" id="meEditPanel" hidden>
+          <div class="field">
+            <label>你的昵称</label>
+            <input type="text" id="meNickInput" value="momo" maxlength="10" placeholder="你的昵称：momo" aria-label="你的昵称">
+          </div>
+          <p class="field-hint">名字会印在共鸣卡上，只存在你的手机里。</p>
+        </div>
       </div>
 
       <!-- 共鸣卡（DOM 实时预览） -->
@@ -267,15 +254,14 @@
         </div>
         <p class="card-quote" id="cardQuote"></p>
         <div class="card-saybox">
-          <span class="saybox-label">我想对 TA 说</span>
-          <p class="card-say" id="cardSay">TA，我记住你了</p>
+          <span class="saybox-label">我和 TA 的故事</span>
+          <p class="card-say" id="cardSay">第一次知道 TA，是在这里。今天，我记住了 TA。</p>
         </div>
         <div class="card-dash"></div>
         <div class="card-foot">
-          <div class="me-avatar" id="cardAvatar"></div>
+          <div class="me-avatar"><img src="assets/avatar-3.webp" alt="你的头像"></div>
           <div class="me">
-            <b id="cardNick">今天也想摸猫</b>
-            <span id="cardIntro">路过同创汇，来看看猫</span>
+            <b id="cardNick">momo</b>
           </div>
           <div class="days"><b id="cardDays">81</b><span>天后拆迁</span></div>
         </div>
@@ -373,7 +359,6 @@
   </button>
 </nav>
 
-<input type="file" id="filePick" accept="image/*" hidden>
 <script src="cats.js"></script>
 <script src="app.js"></script>
 </body>

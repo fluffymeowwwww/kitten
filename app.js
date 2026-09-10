@@ -18,10 +18,26 @@
     gone: ["嗖——TA 还没准备好。", "不是每只猫都要被摸到，你愿意看见 TA，就很好了。"]
   };
   var MOOD_LABEL = { close: "亲人", shy: "中等 · 需培养", gone: "不亲人" };
-  var PRESET_AVATARS = ["avatar-1.webp", "avatar-2.webp", "avatar-3.webp", "avatar-4.webp",
-    "avatar-5.webp", "avatar-6.webp", "avatar-7.webp", "avatar-8.webp", "avatar-9.webp"];
   var SILSIL = { sit: "i-cat-sit", peek: "i-cat-peek", trio: "i-cat-trio", family: "i-cat-family" };
-  var SAYS = ["TA，我记住你了", "要平安等到家", "谢谢你愿意靠近我"];
+  /* v1.4：留言主题从「想对 TA 说」改为「说说和 TA 的故事」
+     chip 是故事开头（带省略号展示），点击填入输入框由用户续写 */
+  var STORY_STARTERS = [
+    "第一次知道 TA，是……",
+    "如果真的遇见 TA，我想……",
+    "我希望 TA 的故事，后来……"
+  ];
+  // 什么都没写时印在卡片上的兜底微故事（也作为初始预览文案）
+  var DEFAULT_SAY = "第一次知道 TA，是在这里。今天，我记住了 TA。";
+  function starterText(chip) { return chip.replace(/……$/, ""); }
+  // 保存卡片前规范化：空内容、或只点了开头没续写，都用兜底故事
+  function normalizeSay(s) {
+    var v = String(s || "").trim();
+    if (!v) return DEFAULT_SAY;
+    for (var i = 0; i < STORY_STARTERS.length; i++) {
+      if (v === starterText(STORY_STARTERS[i])) return DEFAULT_SAY;
+    }
+    return v;
+  }
 
   // 现状标签：用于「猫猫手册」列表角标与档案卡
   var STATUS_TAG = {
@@ -66,13 +82,23 @@
   function loadJSON(k, fb) { try { var v = localStorage.getItem(getKey(k)); return v ? JSON.parse(v) : fb; } catch (e) { return fb; } }
   function saveJSON(k, v) { try { localStorage.setItem(getKey(k), JSON.stringify(v)); } catch (e) {} }
 
+  // 署名：头像固定第 3 个猫猫头像，无简介；默认昵称 momo，用户改过才写入 localStorage
+  var ME_AVATAR = "assets/avatar-3.webp";
+  var DEFAULT_NICK = "momo";
+  var LEGACY_DEFAULT_NICK = "今天也想摸猫";   // 旧版占位昵称，存量迁移时不沿用
+  function initialNick() {
+    var old = loadJSON("me", null);
+    // 仅迁移用户自己填过的昵称；旧默认占位名、空值都回退 momo
+    return (old && old.nick && old.nick !== LEGACY_DEFAULT_NICK) ? old.nick : DEFAULT_NICK;
+  }
+
   var state = {
-    me: loadJSON("me", null),
+    me: { nick: initialNick() },
     petted: loadJSON("petted", []),        // 已摸(不重复) id 数组
     deck: loadJSON("deck", null),          // 洗牌结果
     ptr: loadJSON("ptr", 0),
     current: null,                          // 当前展示的猫数据
-    say: SAYS[0]
+    say: DEFAULT_SAY
   };
 
   var $ = function (s) { return document.querySelector(s); };
@@ -104,10 +130,10 @@
   }
 
   /* ---------- 视图切换（无 hash，纯状态） ---------- */
-  var views = ["v-cover", "v-welcome", "v-pet", "v-react", "v-story", "v-card", "v-wall", "v-contact"];
+  var views = ["v-cover", "v-pet", "v-react", "v-story", "v-card", "v-wall", "v-contact"];
   var TAB_OF = { "v-cover": 1, "v-pet": 1, "v-wall": 1, "v-contact": 1 };   // 底部导航页
   var TAB_MAP = {
-    "v-cover": "v-cover", "v-welcome": "v-cover",
+    "v-cover": "v-cover",
     "v-pet": "v-pet", "v-react": "v-pet", "v-story": "v-pet", "v-card": "v-pet",
     "v-wall": "v-wall", "v-contact": "v-contact"
   };
@@ -139,7 +165,6 @@
     else if (top !== id) navStack.push(id);
     showView(id);
   }
-  function replaceTop(id) { navStack[navStack.length - 1] = id; showView(id); }
   function back() {
     if (navStack.length > 1) navStack.pop();
     var to = navStack[navStack.length - 1] || "v-pet";
@@ -147,34 +172,25 @@
     if (to === "v-pet") updateMeStrip();
   }
 
-  /* ---------- 登记 ---------- */
-  var chosenAvatar = PRESET_AVATARS[0];
-  var welcomeNext = "v-pet";        // 登记完成后要去哪：默认摸猫页，署名流程则为留言页
-  function renderAvatars() {
-    var wrap = document.getElementById("avatarPick");
-    wrap.innerHTML = "";
-    PRESET_AVATARS.forEach(function (f) {
-      var b = document.createElement("button");
-      b.type = "button"; b.className = "avatar-opt"; if (f === chosenAvatar) b.classList.add("selected");
-      b.id = "av-" + f;
-      var img = document.createElement("img"); img.src = "assets/" + f; img.alt = "复古头像";
-      b.appendChild(img);
-      if (b.classList.contains("selected")) { var t = document.createElement("span"); t.className = "tick"; t.textContent = "✓"; b.appendChild(t); }
-      b.addEventListener("click", function () { chosenAvatar = f; markSelected(b); });
-      wrap.appendChild(b);
-    });
-    // 相册按钮
-    var album = document.createElement("button");
-    album.type = "button"; album.className = "avatar-opt album avatar-album"; album.id = "albumBtn";
-    album.innerHTML = '<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="12" cy="11" r="3"/><path d="M8 5l1.5-2h5L16 5"/></svg>相册';
-    album.addEventListener("click", function () { document.getElementById("filePick").click(); });
-    wrap.appendChild(album);
+  /* ---------- 署名（无登记页，卡片页就地改名；头像固定、无简介） ---------- */
+  // 署名条昵称 + 卡片页脚同步
+  function syncMeCard() {
+    document.getElementById("meEditNick").textContent = state.me.nick || DEFAULT_NICK;
+    if (state.current) syncCard();
   }
-  function markSelected(btn) {
-    var all = document.querySelectorAll("#avatarPick .avatar-opt");
-    for (var i = 0; i < all.length; i++) { var b = all[i]; b.classList.remove("selected"); var t = b.querySelector(".tick"); if (t) t.remove(); }
-    btn.classList.add("selected");
-    var tk = document.createElement("span"); tk.className = "tick"; tk.textContent = "✓"; btn.appendChild(tk);
+  function toggleMePanel() {
+    var panel = document.getElementById("meEditPanel");
+    var bar = document.getElementById("meEditBar");
+    var opening = panel.hidden;
+    if (opening) {
+      var input = document.getElementById("meNickInput");
+      input.value = state.me.nick || DEFAULT_NICK;
+      input.focus();
+      try { input.setSelectionRange(input.value.length, input.value.length); } catch (e) {}
+    }
+    panel.hidden = !opening;
+    bar.setAttribute("aria-expanded", opening ? "true" : "false");
+    document.getElementById("meEditAct").textContent = opening ? "收起" : "改一下";
   }
 
   /* ---------- 摸猫：摸到瞬间（名字与简介立即可见，动效照播一遍） ---------- */
@@ -391,21 +407,39 @@
     }
   }
 
-  /* ---------- 留言 ---------- */
+  /* ---------- 故事（原留言） ---------- */
   function renderSays() {
     var wrap = document.getElementById("sayChips");
+    var input = document.getElementById("sayInput");
     wrap.innerHTML = "";
-    SAYS.forEach(function (txt) {
-      var b = document.createElement("button"); b.type = "button"; b.className = "chip"; b.textContent = txt;
-      if (txt === state.say) b.classList.add("on");
-      b.addEventListener("click", function () { state.say = txt; applySay(); syncChips(); });
+    STORY_STARTERS.forEach(function (chip) {
+      var b = document.createElement("button"); b.type = "button"; b.className = "chip"; b.textContent = chip;
+      if (state.say.indexOf(starterText(chip)) === 0) b.classList.add("on");
+      b.addEventListener("click", function () {
+        // 点开头：填入输入框、光标停到末尾直接续写
+        input.value = starterText(chip);
+        state.say = input.value;
+        applySay(); syncChips(); updateSayCount();
+        input.focus();
+        var len = input.value.length;
+        try { input.setSelectionRange(len, len); } catch (e) {}
+      });
       wrap.appendChild(b);
     });
-    document.getElementById("sayInput").value = (SAYS.indexOf(state.say) === -1) ? state.say : "";
+    // 初始兜底故事只显示在卡片上，输入框留空给 placeholder
+    input.value = (state.say === DEFAULT_SAY) ? "" : state.say;
+    updateSayCount();
   }
   function syncChips() {
     var chips = document.querySelectorAll("#sayChips .chip");
-    for (var i = 0; i < chips.length; i++) chips[i].classList.toggle("on", chips[i].textContent === state.say);
+    for (var i = 0; i < chips.length; i++) {
+      chips[i].classList.toggle("on", state.say.indexOf(starterText(chips[i].textContent)) === 0);
+    }
+  }
+  function updateSayCount() {
+    var el = document.getElementById("sayCount");
+    var input = document.getElementById("sayInput");
+    if (el && input) el.textContent = input.value.length;
   }
   function applySay() {
     state.current = state.current || getCat("tiebai");
@@ -422,10 +456,7 @@
     document.getElementById("cardWait").classList.toggle("home", cat.status === "home");
     document.getElementById("cardQuote").innerHTML = "「" + cat.quote + "」";
     renderPhotoSlot(document.getElementById("cardPhoto"), cat);
-    var me = state.me || { avatar: "avatar-1.webp", nick: "今天也想摸猫", intro: "" };
-    document.getElementById("cardAvatar").innerHTML = '<img src="assets/' + me.avatar + '" alt="我的头像">';
-    document.getElementById("cardNick").textContent = me.nick;
-    document.getElementById("cardIntro").textContent = me.intro || "来摸猫的";
+    document.getElementById("cardNick").textContent = state.me.nick || DEFAULT_NICK;
     document.getElementById("cardDays").textContent = daysLeft();
   }
 
@@ -448,7 +479,6 @@
   var CARD_STATUS_COLOR = { wait: "#aa4d31", home: "#5c7a4f", star: "#7c806d", lost: "#7c806d", shop: "#b98534", foster: "#b98534" };
   function saveCard() {
     var cat = state.current; if (!cat) return;
-    var me = state.me || { avatar: "avatar-1.webp", nick: "今天也想摸猫", intro: "" };
     // 3:4 明信片，与页面里的 DOM 预览卡同一套版式（DOM 卡 330 宽，导出缩放 2.27 倍）
     var W = 750, H = 1000;
     var L = 50, R = 700;                       // 内容左右界
@@ -545,7 +575,7 @@
     var catImgTask = cat.has_photo && cat.photo
       ? loadImg("assets/cats/" + cat.photo)
       : loadImg("data:image/svg+xml;charset=utf-8," + encodeURIComponent(SILSVG[cat.silhouette || "sit"].replace(/\{C\}/g, pine)));
-    return Promise.all([catImgTask, loadImg("assets/" + me.avatar), loadImg("assets/stamp.webp")])
+    return Promise.all([catImgTask, loadImg(ME_AVATAR), loadImg("assets/stamp.webp")])
     .then(function (rs) {
       var im = rs[0], avatar = rs[1], stamp = rs[2];
 
@@ -616,16 +646,17 @@
       txt(stLabel, 0, 6, 18, stColor, "center", 700, "2px");
       ctx.restore();
 
-      /* —— 金句：居中粗体，自带「」，无眉题（对应 .card-quote） —— */
-      var qSize = 34, qLH = 54, qTop = 436;
+      /* —— 金句：居中粗体，自带「」（v1.4 压缩字号，给故事让版面） —— */
+      var qSize = 28, qLH = 42, qTop = 408;
       var qLines = wrapLines("「" + cat.quote + "」", R - L, qSize, 700, "1px");
       qLines.forEach(function (l, i) {
         txt(l, W / 2, qTop + i * qLH, qSize, ink, "center", 700, "1px");
       });
       var quoteBottom = qTop + qLines.length * qLH;
 
-      /* —— 留言框：灰虚线、奶白底；高度弹性吃掉剩余空间（对应 .card-saybox） —— */
-      var boxX = L, boxW = R - L, boxY = quoteBottom + 26, boxBottom = 778;
+      /* —— 故事框：灰虚线、奶白底；高度弹性吃掉剩余空间（对应 .card-saybox） —— */
+      var sayText = normalizeSay(state.say);
+      var boxX = L, boxW = R - L, boxY = quoteBottom + 22, boxBottom = 788;
       var boxH = boxBottom - boxY;
       ctx.fillStyle = "#fffaf0";
       roundRect(boxX, boxY, boxW, boxH, 8); ctx.fill();
@@ -637,12 +668,16 @@
       // 大圆邮戳先画，文字压在它上面；整体落在标签以下，避免与标签打架
       drawPostmark(110, boxBottom - 74, 72);
 
-      // 留言文字：标签固定框内左上，正文在标签以下区域垂直居中
-      var saySize = 36, sayLH = 58;
-      var sayLines = wrapLines(state.say, boxW - 64, saySize, 700, "1px");
-      txt("我想对 TA 说", boxX + 28, boxY + 42, 18, ochre, "left", 400, "2px");
-      var sayTop = boxY + 72, sayBottom = boxBottom - 26;
-      var firstBase = sayTop + Math.max(0, (sayBottom - sayTop - sayLines.length * sayLH) / 2) + saySize * .82;
+      // 故事文字：标签固定框内左上，正文在标签以下区域垂直居中；长文自动缩档防溢出
+      var saySize = 30, sayLH = 46;
+      var sayLines = wrapLines(sayText, boxW - 64, saySize, 700, "1px");
+      var sayTop = boxY + 66, sayBottom = boxBottom - 24, sayAvail = sayBottom - sayTop;
+      while (sayLines.length * sayLH > sayAvail && saySize > 22) {
+        saySize -= 2; sayLH -= 3;
+        sayLines = wrapLines(sayText, boxW - 64, saySize, 700, "1px");
+      }
+      txt("我和 TA 的故事", boxX + 28, boxY + 40, 18, ochre, "left", 400, "2px");
+      var firstBase = sayTop + Math.max(0, (sayAvail - sayLines.length * sayLH) / 2) + saySize * .82;
       sayLines.forEach(function (l, i) {
         txt(l, W / 2, firstBase + i * sayLH, saySize, ink, "center", 700, "1px");
       });
@@ -669,8 +704,8 @@
       ctx.restore();
       ctx.strokeStyle = ochre; ctx.lineWidth = 3;
       ctx.beginPath(); ctx.arc(acx, acy, ar, 0, Math.PI * 2); ctx.stroke();
-      txt(me.nick, 160, 864, 27, ink, "left", 700, "1px");
-      txt(me.intro || "路过同创汇，来看看猫", 160, 898, 18, muted, "left");
+      // 昵称单行，垂直居中于头像
+      txt(state.me.nick || DEFAULT_NICK, 160, 883, 27, ink, "left", 700, "1px");
       txt(String(daysLeft()), R, 876, 52, rust, "right", 700);
       txt("天后拆迁", R, 902, 16, muted, "right");
 
@@ -808,15 +843,15 @@
     strip.hidden = false;
     strip.innerHTML =
       '<span class="me-line"><svg viewBox="0 0 24 24"><use href="#i-paw"/></svg>' +
-      (state.me ? "你好，" + state.me.nick + " · " : "") +
+      "你好，" + (state.me.nick || DEFAULT_NICK) + " · " +
       "已遇见 <b>" + petted + "</b>/" + POOL.length + " 位待安置小猫</span>" +
       '<span class="me-progress"><i style="width:' + pct + '%"></i></span>';
   }
 
   /* ---------- 事件委托 ---------- */
   function init() {
-    renderAvatars();
     renderSays();
+    syncMeCard();        // 署名条初始昵称（头像在 HTML 中固定）
 
     document.addEventListener("click", function (e) {
       var t = e.target;
@@ -827,7 +862,6 @@
       if (!t || !t.dataset) return;
       switch (t.dataset.action) {
         case "fromCover": fromCover(); break;
-        case "enter": doEnter(); break;
         case "draw": draw(); break;
         case "skipReact": gotoStory(state.current); break;
         case "toCard": goCard(); break;
@@ -838,28 +872,23 @@
       }
     });
 
-    // 登录输入即时改名卡预览
+    // 故事输入：实时同步卡片预览、chip 高亮与字数
     document.getElementById("sayInput").addEventListener("input", function (ev) {
       var v = ev.target.value.trim();
-      if (v) { state.say = v; applySay(); var cs = document.querySelectorAll("#sayChips .chip"); for (var i = 0; i < cs.length; i++) cs[i].classList.remove("on"); }
-      else { state.say = SAYS[0]; applySay(); syncChips(); }
+      state.say = v || DEFAULT_SAY;
+      applySay(); syncChips(); updateSayCount();
     });
 
-    document.getElementById("filePick").addEventListener("change", function (ev) {
-      var file = ev.target.files && ev.target.files[0];
-      if (!file) return;
-      var reader = new FileReader();
-      reader.onload = function () {
-        chosenAvatar = "";
-        var wrap = document.getElementById("avatarPick");
-        var all = wrap.querySelectorAll(".avatar-opt");
-        for (var i = 0; i < all.length; i++) { var b = all[i]; b.classList.remove("selected"); var tk = b.querySelector(".tick"); if (tk) tk.remove(); }
-        // 相册按钮显示所选图
-        var album = document.getElementById("albumBtn");
-        album.classList.add("album-has", "selected");
-        album.innerHTML = '<img src="' + reader.result + '" alt="我的照片">';
-      };
-      reader.readAsDataURL(file);
+    // 署名条：展开/收起就地改名
+    document.getElementById("meEditBar").addEventListener("click", toggleMePanel);
+    document.getElementById("meNickInput").addEventListener("input", function (ev) {
+      var v = ev.target.value.trim();
+      // 清空只在展示层回退 momo，不把空值/占位名写回本地
+      state.me.nick = v || DEFAULT_NICK;
+      if (v) saveJSON("me", state.me);
+      document.getElementById("meEditNick").textContent = state.me.nick;
+      if (state.current) syncCard();
+      updateMeStrip();
     });
 
     // 启动：停在封面；倒计时
@@ -873,27 +902,9 @@
     showView("v-cover");
   }
 
-  function doEnter() {
-    var nick = (document.getElementById("nickName").value || "今天也想摸猫").trim();
-    var intro = document.getElementById("intro").value.trim();
-    state.me = { avatar: chosenAvatar || "avatar-1.webp", nick: nick, intro: intro };
-    saveJSON("me", state.me);
-    updateMeStrip();
-    var next = welcomeNext;
-    welcomeNext = "v-pet";
-    if (next === "v-card") {                // 从「给 TA 留句话」过来的：登记完接着写留言
-      syncCard();
-      document.getElementById("savedWrap").hidden = true;
-      document.getElementById("cardPrev").style.display = "";
-    }
-    if (navStack[navStack.length - 1] === "v-welcome") replaceTop(next); else push(next);
-  }
-  // 封面到摸猫只隔一步；登记推迟到真要署名的时候
+  // 封面到摸猫只隔一步（v1.4 起无登记页，署名在卡片页就地改）
   function fromCover() { push("v-pet"); }
-  function goCard() {
-    if (!state.me) { welcomeNext = "v-card"; push("v-welcome"); return; }
-    openCard();
-  }
+  function goCard() { openCard(); }
   function openCard() {
     syncCard();
     document.getElementById("savedWrap").hidden = true;
