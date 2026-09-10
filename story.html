@@ -176,11 +176,10 @@
     </div>
   </section>
 
-  <!-- ============ 3. 反应动效（摸到瞬间，独立一页） ============ -->
+  <!-- ============ 3. 摸到瞬间（名字与简介立即可见，反应动效照播一遍） ============ -->
   <section class="view" id="v-react">
     <div class="view-inner">
       <div class="react-stage" id="reactStage">
-        <span class="react-mood-label" id="reactMood"><b>亲人</b></span>
         <div class="react-art">
           <img id="reactImg" src="assets/react-close.webp" alt="">
           <span class="paw-fx p1"><svg viewBox="0 0 24 24"><use href="#i-paw"/></svg></span>
@@ -191,11 +190,14 @@
           <span class="speed-fx s2"></span>
           <span class="speed-fx s3"></span>
         </div>
-        <p class="react-narr" id="reactNarr"></p>
-        <div class="react-reveal" id="reactReveal">
+
+        <div class="react-reveal">
           <span class="reveal-lead">你摸到的是</span>
           <b class="reveal-name" id="revealName">铁白</b>
+          <div class="react-tags" id="reactTags"></div>
         </div>
+
+        <p class="react-narr" id="reactNarr"></p>
       </div>
 
       <div class="react-actions">

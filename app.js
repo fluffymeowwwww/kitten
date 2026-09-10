@@ -22,7 +22,7 @@
     "avatar-5.webp", "avatar-6.webp", "avatar-7.webp", "avatar-8.webp", "avatar-9.webp"];
   var SILSIL = { sit: "i-cat-sit", peek: "i-cat-peek", trio: "i-cat-trio", family: "i-cat-family" };
   var SAYS = ["TA，我记住你了", "要平安等到家", "谢谢你愿意靠近我", "下辈子，别再流浪了"];
-  var REVEAL_HOLD = 1600;   // 「你摸到的是 XXX！」揭晓后停留时长
+  var RESULT_HOLD = 2000;   // 动效演完后，结果页再停留这么久才自动进故事页
 
   function getKey(k) { return PREFIX + k; }
   function loadJSON(k, fb) { try { var v = localStorage.getItem(getKey(k)); return v ? JSON.parse(v) : fb; } catch (e) { return fb; } }
@@ -138,7 +138,7 @@
     var tk = document.createElement("span"); tk.className = "tick"; tk.textContent = "✓"; btn.appendChild(tk);
   }
 
-  /* ---------- 摸猫：反应动效（独立一页，单次播放） ---------- */
+  /* ---------- 摸猫：摸到瞬间（名字与简介立即可见，动效照播一遍） ---------- */
   var reactTimer = null;
 
   function draw() {
@@ -155,32 +155,27 @@
     if (reactTimer) { clearTimeout(reactTimer); reactTimer = null; }
     var stage = document.getElementById("reactStage");
     var img = document.getElementById("reactImg");
-    var mood = document.getElementById("reactMood");
     var narr = document.getElementById("reactNarr");
     var revealName = document.getElementById("revealName");
 
     stage.className = "react-stage";        // 清掉旧性格类，重排后再加，动画才会重播
     img.src = MOOD_IMG[cat.mood];
     img.alt = cat.name + "的反应";
-    mood.innerHTML = "<b>" + MOOD_LABEL[cat.mood] + "</b>" + cat.name;
-    narr.innerHTML = MOOD_TXT[cat.mood].map(function (t, i) {
-      return '<span class="line l' + (i + 1) + '">' + t + "</span>";
-    }).join("");
     if (revealName) revealName.textContent = cat.name;
+    renderTags(document.getElementById("reactTags"), cat);   // 简介标签行，进入即见
+    narr.innerHTML = MOOD_TXT[cat.mood].map(function (t) {
+      return '<span class="line">' + t + "</span>";
+    }).join("");
 
     void stage.offsetWidth;
     stage.className = "react-stage stage-" + cat.mood;
 
-    // 第一段：动效演完 → 揭晓「你摸到的是 XXX！」
+    // 动效演完 + 停留 RESULT_HOLD 让结果看够，再自动进故事页；中途切走就不打扰
     reactTimer = setTimeout(function () {
-      stage.classList.add("revealed");
-      // 第二段：揭晓停留一会儿（让人看清），再进故事页；中途切走就不打扰
-      reactTimer = setTimeout(function () {
-        reactTimer = null;
-        var view = document.getElementById("v-react");
-        if (state.current === cat && view && view.classList.contains("active")) gotoStory(cat);
-      }, REVEAL_HOLD);
-    }, cycleDuration(cat.mood));
+      reactTimer = null;
+      var view = document.getElementById("v-react");
+      if (state.current === cat && view && view.classList.contains("active")) gotoStory(cat);
+    }, cycleDuration(cat.mood) + RESULT_HOLD);
   }
 
   function cycleDuration(mood) { return mood === "shy" ? 3400 : 3200; }
@@ -197,22 +192,29 @@
     Object.keys(MOOD_IMG).forEach(function (k) { var i = new Image(); i.src = MOOD_IMG[k]; });
   }
 
+  /* ---------- 标签行（摸到瞬间的简介 / 故事页共用） ---------- */
+  function tagData(cat) {
+    var tags = [{ t: cat.color + " · " + cat.gender }, { t: MOOD_LABEL[cat.mood], cls: "tag-mood" }];
+    if (cat.sterilized) tags.push({ t: "已绝育" });
+    tags.push(cat.adopted ? { t: "TA 有家了", cls: "tag-home" } : { t: "还在等家", cls: "tag-wait" });
+    return tags;
+  }
+  function renderTags(wrap, cat) {
+    if (!wrap) return;
+    wrap.innerHTML = "";
+    tagData(cat).forEach(function (d) {
+      var s = document.createElement("span");
+      s.className = "tag" + (d.cls ? " " + d.cls : "");
+      s.textContent = d.t; wrap.appendChild(s);
+    });
+  }
+
   /* ---------- 故事渲染（含热词串门） ---------- */
   function renderStory(cat) {
     document.getElementById("storyName").textContent = cat.name;
 
     // 标签
-    var tags = [cat.color + " · " + cat.gender];
-    tags.push(MOOD_LABEL[cat.mood]);
-    if (cat.sterilized) tags.push("已绝育");
-    tags.push(cat.adopted ? "TA 有家了" : "还在等家");
-    var tagWrap = document.getElementById("storyTags");
-    tagWrap.innerHTML = "";
-    tags.forEach(function (t) {
-      var s = document.createElement("span");
-      s.className = "tag" + (t === "还在等家" ? " tag-wait" : (t === "TA 有家了" ? " tag-home" : ""));
-      s.textContent = t; tagWrap.appendChild(s);
-    });
+    renderTags(document.getElementById("storyTags"), cat);
 
     // 照片位
     renderPhotoSlot(document.getElementById("storyPhoto"), cat);

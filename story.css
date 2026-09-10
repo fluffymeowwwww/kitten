@@ -78,31 +78,42 @@ img{display:block;max-width:100%}
 .pet-hero figcaption{position:absolute;bottom:8px;left:0;right:0;text-align:center;z-index:2;color:#52614e;font-family:var(--serif);font-size:11px;letter-spacing:2px;text-shadow:0 1px 8px var(--paper)}
 .pet-actions{margin-top:16px;display:flex;flex-direction:column;gap:12px}
 
-/* ===== 3. 反应动效（独立一页） =====
-   动效时长收敛在 --cycle；演完揭晓「你摸到的是 XXX！」，
-   停留 REVEAL_HOLD 后自动进故事页，也可点「看看 TA 的故事」直接跳过。 */
-.react-stage{--cycle:3.2s;margin:14px 0 0;text-align:center}
-.react-mood-label{display:inline-flex;align-items:baseline;gap:7px;font-size:9px;letter-spacing:2px;border:1px solid var(--pine);border-radius:20px;padding:4px 13px;color:var(--pine);background:#f8efdaaa;margin:0 0 10px}
-.react-mood-label b{font-family:var(--serif);font-size:13px;letter-spacing:3px}
-.react-mood-label.close{border-color:var(--rust);color:var(--rust)}
-.react-mood-label.gone{border-color:var(--muted);color:var(--muted)}
+/* ===== 3. 摸到瞬间（独立一页） =====
+   名字与标签简介进入即显示，反应动效同时播一遍（时长收敛在 --cycle）；
+   演完自动进故事页，也可点「看看 TA 的故事」直接跳过。 */
+.react-stage{--cycle:3.2s;margin:12px 0 0;text-align:center}
 .react-art{position:relative;height:360px;height:min(44svh,360px);width:auto;aspect-ratio:372/762;margin:0 auto;overflow:hidden;background:#fbf4e4;border:1px solid #263f3622;box-shadow:0 8px 20px #263f361f}
 .react-art img{width:100%;height:100%;object-fit:cover;display:block;will-change:transform,clip-path}
-.react-narr{margin:12px auto 0;max-width:320px;font-family:var(--serif);font-size:13.5px;letter-spacing:1.5px;line-height:1.95;color:var(--ink);min-height:3.9em}
-.react-narr .line{display:block;opacity:0}
-/* 动效收尾后揭晓猫名，替代旁白位置，高度不变不跳版 */
-.react-reveal{display:none;margin:12px auto 0;min-height:3.9em;text-align:center}
-.react-stage.revealed .react-narr{display:none}
-.react-stage.revealed .react-reveal{display:block;animation:reveal-in .6s cubic-bezier(.2,1.25,.4,1) both}
-.reveal-lead{display:block;font-family:var(--serif);font-size:13px;letter-spacing:5px;color:#7e806c}
-.reveal-name{display:block;font-family:var(--serif);font-size:34px;font-weight:900;letter-spacing:6px;color:var(--rust);line-height:1.35;margin-top:2px}
-.reveal-name:after{content:"！";font-size:25px;letter-spacing:0}
-@keyframes reveal-in{from{opacity:0;transform:translateY(12px) scale(.92)}to{opacity:1;transform:none}}
-.react-actions{margin-top:16px}
+/* 抽到结果：进入即见，不再分「先动效、后揭晓」两段 */
+.react-reveal{margin:13px auto 0;text-align:center}
+.reveal-lead{display:block;font-family:var(--serif);font-size:12px;letter-spacing:5px;color:#7e806c}
+.reveal-name{display:block;font-family:var(--serif);font-size:31px;font-weight:900;letter-spacing:6px;color:var(--rust);line-height:1.3;margin-top:2px}
+.reveal-name:after{content:"！";font-size:22px;letter-spacing:0}
+.react-tags{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:9px}
+/* 性格标签随动效档位变色 */
+.stage-close .react-tags .tag-mood{border-color:var(--rust);color:var(--rust)}
+.stage-gone .react-tags .tag-mood{border-color:var(--muted);color:var(--muted)}
+.react-narr{margin:11px auto 0;max-width:320px;font-family:var(--serif);font-size:13px;letter-spacing:1.5px;line-height:1.9;color:var(--ink)}
+.react-narr .line{display:block}
+.react-actions{margin-top:14px}
+/* 矮屏：名字+简介+按钮要能一屏看完，反应图让出空间 */
+@media(max-height:760px){
+  .react-stage{margin-top:8px}
+  .react-art{height:min(38svh,300px)}
+  .react-reveal{margin-top:10px}
+  .reveal-name{font-size:28px}
+  .react-narr{margin-top:9px;font-size:12.5px;line-height:1.85}
+  .react-actions{margin-top:11px}
+}
+@media(max-height:640px){
+  .react-art{height:min(30svh,190px)}
+  .reveal-name{font-size:25px}
+  .react-narr{font-size:12px}
+}
 
 /* —— 亲人：弹进手心 → 呼噜 + 蹭 + 爪印飘 —— */
 .stage-close{--cycle:3.2s}
-.stage-close .react-art img{animation:close-enter .8s cubic-bezier(.2,1.45,.4,1) both, close-life 2.4s ease-in-out .8s}
+.stage-close .react-art img{animation:close-enter .8s cubic-bezier(.2,1.45,.4,1) both, close-life 2.4s ease-in-out .8s forwards}
 @keyframes close-enter{0%{transform:translateY(40%) scale(.7);opacity:0}55%{opacity:1}100%{transform:translateY(0) scale(1);opacity:1}}
 @keyframes close-life{0%,100%{transform:scale(1.012) rotate(-1.4deg)}25%{transform:scale(1) rotate(1.2deg)}50%{transform:scale(1.03) rotate(.4deg)}75%{transform:scale(1) rotate(-1.2deg)}}
 .paw-fx{position:absolute;width:20px;height:20px;color:var(--rust);opacity:0;z-index:2;pointer-events:none}
@@ -127,7 +138,7 @@ img{display:block;max-width:100%}
 }
 
 /* —— 不亲人：尾巴一晃 → 嗖地缩进空箱 —— */
-.stage-gone .react-art img{animation:gone-run var(--cycle) ease-in-out}
+.stage-gone .react-art img{animation:gone-run var(--cycle) ease-in-out forwards}
 @keyframes gone-run{
   0%{transform:translateY(40%);clip-path:inset(0 0 0 0)}
   12%{transform:translateY(0)}
@@ -144,20 +155,10 @@ img{display:block;max-width:100%}
 .stage-gone .speed-fx{animation:whoosh var(--cycle) ease-out}
 @keyframes whoosh{0%,27%{opacity:0;transform:translateX(-46px)}31%{opacity:.75}37%{opacity:0;transform:translateX(46px)}100%{opacity:0}}
 
-/* 旁白按节奏淡入，并在动效收尾前保持可见（单次播放） */
-.stage-close .react-narr .l1{animation:narr-a var(--cycle) ease-in-out}
-.stage-close .react-narr .l2{animation:narr-a var(--cycle) ease-in-out .3s}
-.stage-shy .react-narr .l1{animation:narr-b var(--cycle) ease-in-out}
-.stage-shy .react-narr .l2{animation:narr-b var(--cycle) ease-in-out .45s}
-.stage-gone .react-narr .l1{animation:narr-c var(--cycle) ease-in-out}
-.stage-gone .react-narr .l2{animation:narr-c var(--cycle) ease-in-out .4s}
-@keyframes narr-a{0%,50%{opacity:0;transform:translateY(5px)}64%,100%{opacity:1;transform:none}}
-@keyframes narr-b{0%,36%{opacity:0;transform:translateY(5px)}50%,100%{opacity:1;transform:none}}
-@keyframes narr-c{0%,54%{opacity:0;transform:translateY(5px)}68%,100%{opacity:1;transform:none}}
+/* 旁白随结果一起立即可见，不再按动效节奏延迟淡入 */
 @media(prefers-reduced-motion:reduce){
   .stage-close .react-art img,.stage-shy .react-art img,.stage-gone .react-art img,
-  .paw-fx,.speed-fx,.react-narr .line{animation-duration:.01s !important;animation-iteration-count:1 !important}
-  .react-narr .line{opacity:1}
+  .paw-fx,.speed-fx{animation-duration:.01s !important;animation-iteration-count:1 !important}
 }
 .story-head{margin:10px 0 0;text-align:center;position:relative}
 .story-name{font-family:var(--serif);font-size:30px;font-weight:900;letter-spacing:6px;margin:0}
@@ -247,9 +248,6 @@ img{display:block;max-width:100%}
 }
 
 /* ===== 正式版交互补充 ===== */
-/* 反应标签随性格变色 */
-.stage-close .react-mood-label{border-color:var(--rust);color:var(--rust)}
-.stage-gone .react-mood-label{border-color:var(--muted);color:var(--muted)}
 /* 故事区：已独立成页，直接呈现 */
 #storyArea{animation:fadein .5s ease both}
 /* 「有家了」绿色标签 */
