@@ -22,6 +22,7 @@
     "avatar-5.webp", "avatar-6.webp", "avatar-7.webp", "avatar-8.webp", "avatar-9.webp"];
   var SILSIL = { sit: "i-cat-sit", peek: "i-cat-peek", trio: "i-cat-trio", family: "i-cat-family" };
   var SAYS = ["TA，我记住你了", "要平安等到家", "谢谢你愿意靠近我", "下辈子，别再流浪了"];
+  var REVEAL_HOLD = 1600;   // 「你摸到的是 XXX！」揭晓后停留时长
 
   function getKey(k) { return PREFIX + k; }
   function loadJSON(k, fb) { try { var v = localStorage.getItem(getKey(k)); return v ? JSON.parse(v) : fb; } catch (e) { return fb; } }
@@ -64,7 +65,15 @@
   }
 
   /* ---------- 视图切换（无 hash，纯状态） ---------- */
-  var views = ["v-cover", "v-welcome", "v-pet", "v-story", "v-card", "v-wall"];
+  var views = ["v-cover", "v-welcome", "v-pet", "v-react", "v-story", "v-card", "v-wall"];
+  var TAB_OF = { "v-cover": 1, "v-pet": 1, "v-wall": 1 };          // 底部导航页
+  var TAB_MAP = {
+    "v-cover": "v-cover", "v-welcome": "v-cover",
+    "v-pet": "v-pet", "v-react": "v-pet", "v-story": "v-pet", "v-card": "v-pet",
+    "v-wall": "v-wall"
+  };
+  var STORY_CHAIN = ["v-react", "v-story"];                          // 故事链：连续摸猫不堆叠返回层
+
   function showView(id) {
     for (var i = 0; i < views.length; i++) {
       var el = document.getElementById(views[i]);
@@ -72,20 +81,36 @@
     }
     window.scrollTo(0, 0);
     updateBackBtn(id);
+    updateTabs(id);
   }
   function updateBackBtn(id) {
     var back = document.querySelector('[data-action="back"]');
     if (back) back.hidden = (id === "v-cover");
   }
+  function updateTabs(id) {
+    var active = TAB_MAP[id] || "v-cover";
+    var tabs = document.querySelectorAll("#tabbar .tab");
+    for (var i = 0; i < tabs.length; i++) tabs[i].classList.toggle("active", tabs[i].dataset.tab === active);
+  }
   var navStack = ["v-cover"];
   function push(id) {
-    if (navStack[navStack.length - 1] !== id) navStack.push(id);
+    var top = navStack[navStack.length - 1];
+    if (TAB_OF[id]) navStack = [id];                                 // 落到导航页＝回到根，清空返回链
+    else if (STORY_CHAIN.indexOf(id) !== -1 && STORY_CHAIN.indexOf(top) !== -1) navStack[navStack.length - 1] = id;
+    else if (top !== id) navStack.push(id);
     showView(id);
   }
-  function back() { navStack.pop(); var to = navStack.length ? navStack[navStack.length - 1] : "v-pet"; showView(to); }
+  function replaceTop(id) { navStack[navStack.length - 1] = id; showView(id); }
+  function back() {
+    if (navStack.length > 1) navStack.pop();
+    var to = navStack[navStack.length - 1] || "v-pet";
+    showView(to);
+    if (to === "v-pet") updateMeStrip();
+  }
 
   /* ---------- 登记 ---------- */
   var chosenAvatar = PRESET_AVATARS[0];
+  var welcomeNext = "v-pet";        // 登记完成后要去哪：默认摸猫页，署名流程则为留言页
   function renderAvatars() {
     var wrap = document.getElementById("avatarPick");
     wrap.innerHTML = "";
@@ -113,42 +138,64 @@
     var tk = document.createElement("span"); tk.className = "tick"; tk.textContent = "✓"; btn.appendChild(tk);
   }
 
-  /* ---------- 摸猫：反应动效（单次） ---------- */
+  /* ---------- 摸猫：反应动效（独立一页，单次播放） ---------- */
+  var reactTimer = null;
+
   function draw() {
     var cat = nextCat();
     state.current = cat;
     markPetted(cat.id);
-    renderReaction(cat);
-    push("v-story");
+    updateMeStrip();
+    playReaction(cat);
+    navStack = ["v-pet"];                   // 新的一次摸猫：返回链从摸猫页重新开始
+    push("v-react");
   }
 
-  function renderReaction(cat) {
+  function playReaction(cat) {
+    if (reactTimer) { clearTimeout(reactTimer); reactTimer = null; }
     var stage = document.getElementById("reactStage");
     var img = document.getElementById("reactImg");
     var mood = document.getElementById("reactMood");
     var narr = document.getElementById("reactNarr");
-    var storyArea = document.getElementById("storyArea");
+    var revealName = document.getElementById("revealName");
 
-    stage.className = "react-stage stage-" + cat.mood;
+    stage.className = "react-stage";        // 清掉旧性格类，重排后再加，动画才会重播
     img.src = MOOD_IMG[cat.mood];
     img.alt = cat.name + "的反应";
     mood.innerHTML = "<b>" + MOOD_LABEL[cat.mood] + "</b>" + cat.name;
-    narr.innerHTML = MOOD_TXT[cat.mood].map(function (t) { return '<span class="line">' + t + "</span>"; }).join("");
+    narr.innerHTML = MOOD_TXT[cat.mood].map(function (t, i) {
+      return '<span class="line l' + (i + 1) + '">' + t + "</span>";
+    }).join("");
+    if (revealName) revealName.textContent = cat.name;
 
-    // 重新触发动画
-    stage.classList.remove("stage-" + cat.mood);
     void stage.offsetWidth;
-    stage.classList.add("stage-" + cat.mood);
-    storyArea.classList.remove("show");
+    stage.className = "react-stage stage-" + cat.mood;
 
-    // 反应演出结束后，展示故事
-    setTimeout(function () {
-      renderStory(cat);
-      storyArea.classList.add("show");
+    // 第一段：动效演完 → 揭晓「你摸到的是 XXX！」
+    reactTimer = setTimeout(function () {
+      stage.classList.add("revealed");
+      // 第二段：揭晓停留一会儿（让人看清），再进故事页；中途切走就不打扰
+      reactTimer = setTimeout(function () {
+        reactTimer = null;
+        var view = document.getElementById("v-react");
+        if (state.current === cat && view && view.classList.contains("active")) gotoStory(cat);
+      }, REVEAL_HOLD);
     }, cycleDuration(cat.mood));
   }
 
-  function cycleDuration(mood) { return mood === "close" ? 2100 : 2400; }
+  function cycleDuration(mood) { return mood === "shy" ? 3400 : 3200; }
+
+  function gotoStory(cat) {
+    if (!cat) return;
+    if (reactTimer) { clearTimeout(reactTimer); reactTimer = null; }
+    renderStory(cat);
+    push("v-story");
+  }
+
+  /* 预加载反应图，避免切页时白屏 */
+  function preload() {
+    Object.keys(MOOD_IMG).forEach(function (k) { var i = new Image(); i.src = MOOD_IMG[k]; });
+  }
 
   /* ---------- 故事渲染（含热词串门） ---------- */
   function renderStory(cat) {
@@ -197,11 +244,11 @@
     return p;
   }
   function jumpTo(name) {
-    var c = null;
-    for (var i = 0; i < CATS.length; i++) if (CATS[i].name.indexOf(name) !== -1) { c = CATS[i]; break; }
-    // 直接命中原名
-    if (!c) for (var j = 0; j < CATS.length; j++) if (CATS[j].name === name) { c = CATS[j]; break; }
-    if (c) { renderReaction(c); push("v-story"); }
+    var c = null, i;
+    for (i = 0; i < CATS.length; i++) if (CATS[i].name === name) { c = CATS[i]; break; }
+    if (!c) for (i = 0; i < CATS.length; i++) if (CATS[i].name.indexOf(name) !== -1) { c = CATS[i]; break; }
+    // 串门是「去读 TA 的故事」，不再重放反应动效
+    if (c) { state.current = c; markPetted(c.id); gotoStory(c); }
   }
 
   function renderPhotoSlot(el, cat) {
@@ -306,6 +353,18 @@
       });
       return lines.length;
     }
+    // 只测量分行，不绘制（用于先算高度再画框）
+    function wrapLines(s, maxW, size, weight) {
+      ctx.font = (weight || 700) + " " + size + "px 'Songti SC', serif";
+      var chars = String(s).split("");
+      var line = "", lines = [];
+      for (var i = 0; i < chars.length; i++) {
+        line += chars[i];
+        if (ctx.measureText(line).width > maxW) { lines.push(line.slice(0, -1)); line = chars[i]; }
+      }
+      lines.push(line);
+      return lines;
+    }
 
     // 顶部栏
     txt("同创汇猫咪故事馆", 54, 84, 22, pine, "Songti SC", "left", 700);
@@ -340,14 +399,37 @@
       txt(cat.adopted ? "TA 有家了" : "还在等家", tagX, tagY + 12, 18, rust, "Songti SC", "left", 700);
 
       // 金句
-      var qy = 560;
+      var qy = 540;
       txt("—— TA 的故事 ——", W / 2, qy, 15, ochre, "Songti SC", "center");
-      var qLines = wrap(cat.quote, W / 2, qy + 44, W - 140, 44, 30, ink, "center");
-      qy += 44 + qLines * 44 + 6;
+      var qLines = wrap(cat.quote, W / 2, qy + 42, W - 140, 42, 30, ink, "center");
+      qy += 42 + qLines * 42 + 12;
 
-      // 留言
-      wrap("「" + state.say + "」" + " —— " + me.nick, W / 2, qy + 36, W - 240, 0, 20, "#6b5a44", "center");
-      var saveY = qy + 54 + 34;
+      // 留言区：卡片上留足位置，是这张卡片的主角之一
+      var saySize = 30, sayLH = 46;
+      var sayLines = wrapLines("「" + state.say + "」", W - 280, saySize, 700);
+      var boxX = 70, boxW = W - 140;
+      var boxY = qy;
+      var boxH = 58 + sayLines.length * sayLH + 20;
+      ctx.save();
+      ctx.strokeStyle = "#b98534cc"; ctx.lineWidth = 2; ctx.setLineDash([7, 7]);
+      roundRect(boxX, boxY, boxW, boxH, 10); ctx.stroke();
+      ctx.restore();
+      txt("我想对 TA 说", boxX + 26, boxY + 36, 15, ochre, "Songti SC", "left");
+      sayLines.forEach(function (l, i) {
+        txt(l, W / 2, boxY + 76 + i * sayLH, saySize, ink, "Songti SC", "center", 700);
+      });
+      txt("—— " + me.nick, boxX + boxW - 30, boxY + boxH - 18, 17, "#8a8268", "Songti SC", "right");
+      // 留言框右上角压一枚小章，像盖过印
+      ctx.save();
+      ctx.translate(boxX + boxW - 12, boxY + 12); ctx.rotate(-Math.PI / 12);
+      ctx.strokeStyle = "#b98534aa"; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(0, 0, 33, 0, Math.PI * 2); ctx.stroke();
+      ctx.beginPath(); ctx.arc(0, 0, 28, 0, Math.PI * 2); ctx.stroke();
+      ctx.fillStyle = "#b98534"; ctx.textAlign = "center";
+      ctx.font = "700 15px 'Songti SC', serif";
+      ctx.fillText("已遇见", 0, 6);
+      ctx.restore();
+      var saveY = boxY + boxH + 34;
 
       // 底部：头像 + 简介 + 倒计时 + 右上角邮票
       return Promise.all([loadImg("assets/" + me.avatar), loadImg("assets/stamp.webp")]).then(function (rs) {
@@ -366,8 +448,6 @@
         return true;
       });
     }).then(function () {
-      // 邮戳（右上角圆章）
-      drawPostmark(ctx, W - 200, H - 320, 120, ochre, "已遇见", "TC·STORY");
       // 底部小字
       txt("距离同创汇拆迁还有 " + daysLeft() + " 天，在 TA 找到家之前，请记得 TA", W / 2, H - 34, 15, "#8a8268", "Songti SC", "center");
     }).then(function () {
@@ -383,20 +463,6 @@
       link.href = dataUrl; link.download = "共鸣卡-" + cat.name + ".png"; link.click();
     });
   }
-  function drawPostmark(ctx, cx, cy, r, color, main, sub) {
-    ctx.save(); ctx.translate(cx, cy); ctx.rotate(-Math.PI / 14);
-    ctx.strokeStyle = color; ctx.lineWidth = 2; ctx.globalAlpha = .55;
-    ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI * 2); ctx.stroke();
-    ctx.beginPath(); ctx.arc(0, 0, r * 0.8, 0, Math.PI * 2); ctx.stroke();
-    ctx.font = "13px Georgia, serif"; ctx.fillStyle = color; ctx.globalAlpha = .55; ctx.textAlign = "center";
-    ctx.fillText("TONGCHUANGHUI·CAT", 0, -r * 0.5 + 5);
-    ctx.fillText("· STORY ·", 0, -r * 0.5 + 20);
-    ctx.font = "700 18px 'Songti SC', serif"; ctx.fillText(main, 0, 12);
-    ctx.font = "10px Georgia, serif"; ctx.fillText(sub, 0, 30);
-    ctx.restore();
-    ctx.globalAlpha = 1;
-  }
-
   /* ---------- 图鉴 ---------- */
   function renderWall() {
     var grid = document.getElementById("wallGrid");
@@ -416,19 +482,25 @@
       var sm = document.createElement("small");
       sm.textContent = cat.color + " · " + cat.gender + (cat.family === "小队家族" ? " · 遇见即全家福" : "");
       card.appendChild(sm);
-      card.addEventListener("click", function () { renderReaction(cat); markPetted(cat.id); push("v-story"); });
+      card.addEventListener("click", function () {
+        state.current = cat; markPetted(cat.id); updateMeStrip(); gotoStory(cat);
+      });
       grid.appendChild(card);
     });
   }
 
-  /* ---------- 顶栏我的身份条 ---------- */
+  /* ---------- 摸猫页身份条 + 遇见进度 ---------- */
   function updateMeStrip() {
     var strip = document.getElementById("meStrip");
-    if (!state.me) return;
-    strip.hidden = false;
+    if (!strip) return;
     var petted = state.petted.length;
-    strip.innerHTML = '<span><svg viewBox="0 0 24 24"><use href="#i-paw"/></svg></span>' +
-      "你好，" + state.me.nick + " · 已遇见 <b>" + petted + "</b>/" + CATS.length + " 位住客";
+    var pct = Math.round(petted / CATS.length * 100);
+    strip.hidden = false;
+    strip.innerHTML =
+      '<span class="me-line"><svg viewBox="0 0 24 24"><use href="#i-paw"/></svg>' +
+      (state.me ? "你好，" + state.me.nick + " · " : "") +
+      "已遇见 <b>" + petted + "</b>/" + CATS.length + " 位住客</span>" +
+      '<span class="me-progress"><i style="width:' + pct + '%"></i></span>';
   }
 
   /* ---------- 事件委托 ---------- */
@@ -447,10 +519,11 @@
         case "fromCover": fromCover(); break;
         case "enter": doEnter(); break;
         case "draw": draw(); break;
+        case "skipReact": gotoStory(state.current); break;
         case "toCard": goCard(); break;
         case "saveCard": saveCard(); break;
         case "saveAgain": document.getElementById("cardPrev").style.display = ""; document.getElementById("savedWrap").hidden = true; break;
-        case "gotoWall": renderWall(); push("v-wall"); break;
+        case "tab": onTab(t.dataset.tab); break;
         case "back": back(); break;
       }
     });
@@ -480,6 +553,7 @@
     });
 
     // 启动：停在封面；倒计时
+    preload();
     var dl = document.getElementById("days-left");
     if (dl) dl.textContent = daysLeft();
     updateMeStrip();
@@ -492,18 +566,31 @@
     state.me = { avatar: chosenAvatar || "avatar-1.webp", nick: nick, intro: intro };
     saveJSON("me", state.me);
     updateMeStrip();
-    // 登记是一次性事务：登记后直接落在摸猫页，返回即回封面
-    navStack = ["v-cover"];
-    push("v-pet");
+    var next = welcomeNext;
+    welcomeNext = "v-pet";
+    if (next === "v-card") {                // 从「给 TA 留句话」过来的：登记完接着写留言
+      syncCard();
+      document.getElementById("savedWrap").hidden = true;
+      document.getElementById("cardPrev").style.display = "";
+    }
+    if (navStack[navStack.length - 1] === "v-welcome") replaceTop(next); else push(next);
   }
-  function fromCover() {
-    if (state.me) push("v-pet"); else push("v-welcome");
-  }
+  // 封面到摸猫只隔一步；登记推迟到真要署名的时候
+  function fromCover() { push("v-pet"); }
   function goCard() {
+    if (!state.me) { welcomeNext = "v-card"; push("v-welcome"); return; }
+    openCard();
+  }
+  function openCard() {
     syncCard();
     document.getElementById("savedWrap").hidden = true;
-    var cp = document.getElementById("cardPrev"); cp.style.display = "";
+    document.getElementById("cardPrev").style.display = "";
     push("v-card");
+  }
+  function onTab(id) {
+    if (id === "v-wall") renderWall();
+    if (id === "v-pet") updateMeStrip();
+    push(id);
   }
 
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);

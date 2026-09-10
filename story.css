@@ -4,17 +4,18 @@
   --ochre:#b98534; --cream:#f8efda; --ink:#3a3326; --line:#263f3629;
   --serif:"Songti SC","STSong","Noto Serif CJK SC","SimSun",serif;
   --body:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",sans-serif;
+  --tabh:60px;
 }
 *{box-sizing:border-box}
 body{margin:0;background:#d9d7cb;color:var(--pine);font-family:var(--body);-webkit-font-smoothing:antialiased}
 img{display:block;max-width:100%}
 
 /* ===== 手机画框 ===== */
-.phone{width:100%;max-width:440px;margin:0 auto;background:var(--paper) url("assets/paper-grain.png");min-height:100svh;position:relative;overflow:hidden}
-@media(min-width:600px){body{padding:36px 0}.phone{box-shadow:0 18px 65px #263f3630;min-height:0;border-radius:4px;overflow:hidden}}
+.phone{width:100%;max-width:440px;margin:0 auto;background:var(--paper) url("assets/paper-grain.png");min-height:100svh;position:relative;overflow:hidden;display:flex;flex-direction:column}
+@media(min-width:600px){body{padding:36px 0}.phone{box-shadow:0 18px 65px #263f3630;min-height:calc(100svh - 72px);border-radius:4px;overflow:hidden}}
 
 /* ===== 通用页眉 ===== */
-.masthead{display:flex;align-items:center;justify-content:space-between;margin:0 25px;padding:18px 0 12px;border-bottom:1px solid var(--line);gap:10px}
+.masthead{display:flex;align-items:center;justify-content:space-between;margin:0 25px;padding:14px 0 10px;border-bottom:1px solid var(--line);gap:10px;flex:none}
 .brand{display:flex;align-items:center;gap:7px;font-size:11px;letter-spacing:1px;font-weight:600;white-space:nowrap}
 .brand svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
 .mast-actions{display:flex;gap:8px}
@@ -22,10 +23,20 @@ img{display:block;max-width:100%}
 .abtn-back{border-color:transparent;background:transparent;color:var(--rust);font-size:12px;padding-left:4px;padding-right:4px}
 
 /* ===== 视图切换（默认隐藏，active 显示） ===== */
-.view{display:none;padding:0 0 38px}
+.view{display:none;padding:0 0 calc(var(--tabh) + 22px + env(safe-area-inset-bottom))}
 .view.active{display:block;animation:fadein .5s ease both}
 @keyframes fadein{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 .view-inner{padding:18px 27px 0}
+
+/* ===== 底部导航 ===== */
+.tabbar{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:100%;max-width:440px;z-index:60;display:flex;background:#f4ebd8f5;border-top:1px solid var(--line);padding:6px 6px calc(6px + env(safe-area-inset-bottom));backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);box-shadow:0 -6px 18px #263f3614}
+.tabbar .tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:44px;background:none;border:0;padding:4px 2px;color:#8d9078;font-family:var(--serif);font-size:10.5px;letter-spacing:1.5px;cursor:pointer;transition:color .2s}
+.tabbar .tab svg{width:21px;height:21px;fill:currentColor;opacity:.65;transition:opacity .2s}
+.tabbar .tab:first-child svg{fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.tabbar .tab.active{color:var(--rust)}
+.tabbar .tab.active svg{opacity:1}
+.tabbar .tab:active{transform:translateY(1px)}
+@media(min-width:600px){.tabbar{border-radius:0 0 4px 4px}}
 
 /* ===== 通用标题 ===== */
 .view-title{font-family:var(--serif);font-size:27px;font-weight:900;letter-spacing:3px;margin:14px 0 0;text-align:center}
@@ -43,7 +54,7 @@ img{display:block;max-width:100%}
 .btn-ghost:active{transform:translateY(1px)}
 
 /* ===== 1. 入馆登记 ===== */
-.avatar-pick{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:22px 0 6px}
+.avatar-pick{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:18px 0 6px}
 .avatar-opt{position:relative;aspect-ratio:1;border-radius:50%;overflow:hidden;border:2px solid transparent;padding:0;background:none;cursor:pointer}
 .avatar-opt img{width:100%;height:100%;object-fit:cover}
 .avatar-opt.selected{border-color:var(--rust);box-shadow:0 0 0 3px #aa4d3126}
@@ -59,42 +70,52 @@ img{display:block;max-width:100%}
 .privacy-note svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:1.6}
 
 /* ===== 2. 摸猫 ===== */
-.pet-hero{margin:16px -27px 0;position:relative;isolation:isolate}
-.pet-hero img{width:100%;height:auto}
+.pet-hero{margin:12px -27px 0;height:232px;height:min(30svh,232px);overflow:hidden;position:relative;isolation:isolate}
+.pet-hero img{width:100%;height:100%;object-fit:cover;object-position:center 42%}
 .pet-hero:before,.pet-hero:after{content:"";position:absolute;left:0;right:0;pointer-events:none;z-index:1}
-.pet-hero:before{top:0;height:34px;background:linear-gradient(var(--paper),transparent)}
-.pet-hero:after{bottom:0;height:44px;background:linear-gradient(transparent,var(--paper))}
-.pet-hero figcaption{position:absolute;bottom:10px;left:0;right:0;text-align:center;z-index:2;color:#52614e;font-family:var(--serif);font-size:11px;letter-spacing:2px;text-shadow:0 1px 8px var(--paper)}
-.pet-actions{margin-top:20px;display:flex;flex-direction:column;gap:12px}
-.pet-actions .btn-ghost{font-family:var(--serif)}
+.pet-hero:before{top:0;height:30px;background:linear-gradient(var(--paper),transparent)}
+.pet-hero:after{bottom:0;height:40px;background:linear-gradient(transparent,var(--paper))}
+.pet-hero figcaption{position:absolute;bottom:8px;left:0;right:0;text-align:center;z-index:2;color:#52614e;font-family:var(--serif);font-size:11px;letter-spacing:2px;text-shadow:0 1px 8px var(--paper)}
+.pet-actions{margin-top:16px;display:flex;flex-direction:column;gap:12px}
 
-/* ===== 3. 反应动效 + 故事 =====
-   动效时长 token 统一收敛在 --cycle；视觉稿为 infinite 循环演示，
-   正式版改为单次播放（去掉 infinite）后衔接故事页。 */
-.react-stage{--cycle:4.8s;margin:24px 0 0;text-align:center}
-.react-mood-label{display:inline-flex;align-items:baseline;gap:7px;font-size:9px;letter-spacing:2px;border:1px solid var(--pine);border-radius:20px;padding:4px 13px;color:var(--pine);background:#f8efdaaa;margin:0 0 12px}
+/* ===== 3. 反应动效（独立一页） =====
+   动效时长收敛在 --cycle；演完揭晓「你摸到的是 XXX！」，
+   停留 REVEAL_HOLD 后自动进故事页，也可点「看看 TA 的故事」直接跳过。 */
+.react-stage{--cycle:3.2s;margin:14px 0 0;text-align:center}
+.react-mood-label{display:inline-flex;align-items:baseline;gap:7px;font-size:9px;letter-spacing:2px;border:1px solid var(--pine);border-radius:20px;padding:4px 13px;color:var(--pine);background:#f8efdaaa;margin:0 0 10px}
 .react-mood-label b{font-family:var(--serif);font-size:13px;letter-spacing:3px}
 .react-mood-label.close{border-color:var(--rust);color:var(--rust)}
 .react-mood-label.gone{border-color:var(--muted);color:var(--muted)}
-.react-art{position:relative;width:66%;max-width:250px;aspect-ratio:372/762;margin:0 auto;overflow:hidden;background:#fbf4e4;border:1px solid #263f3622;box-shadow:0 8px 20px #263f361f}
+.react-art{position:relative;height:360px;height:min(44svh,360px);width:auto;aspect-ratio:372/762;margin:0 auto;overflow:hidden;background:#fbf4e4;border:1px solid #263f3622;box-shadow:0 8px 20px #263f361f}
 .react-art img{width:100%;height:100%;object-fit:cover;display:block;will-change:transform,clip-path}
-.react-narr{margin:13px auto 0;max-width:300px;font-family:var(--serif);font-size:13.5px;letter-spacing:1.5px;line-height:2;color:var(--ink);min-height:4.4em}
+.react-narr{margin:12px auto 0;max-width:320px;font-family:var(--serif);font-size:13.5px;letter-spacing:1.5px;line-height:1.95;color:var(--ink);min-height:3.9em}
 .react-narr .line{display:block;opacity:0}
+/* 动效收尾后揭晓猫名，替代旁白位置，高度不变不跳版 */
+.react-reveal{display:none;margin:12px auto 0;min-height:3.9em;text-align:center}
+.react-stage.revealed .react-narr{display:none}
+.react-stage.revealed .react-reveal{display:block;animation:reveal-in .6s cubic-bezier(.2,1.25,.4,1) both}
+.reveal-lead{display:block;font-family:var(--serif);font-size:13px;letter-spacing:5px;color:#7e806c}
+.reveal-name{display:block;font-family:var(--serif);font-size:34px;font-weight:900;letter-spacing:6px;color:var(--rust);line-height:1.35;margin-top:2px}
+.reveal-name:after{content:"！";font-size:25px;letter-spacing:0}
+@keyframes reveal-in{from{opacity:0;transform:translateY(12px) scale(.92)}to{opacity:1;transform:none}}
+.react-actions{margin-top:16px}
 
 /* —— 亲人：弹进手心 → 呼噜 + 蹭 + 爪印飘 —— */
-.stage-close .react-art img{animation:close-enter .85s cubic-bezier(.2,1.45,.4,1) both, close-life 1.9s ease-in-out .85s}
+.stage-close{--cycle:3.2s}
+.stage-close .react-art img{animation:close-enter .8s cubic-bezier(.2,1.45,.4,1) both, close-life 2.4s ease-in-out .8s}
 @keyframes close-enter{0%{transform:translateY(40%) scale(.7);opacity:0}55%{opacity:1}100%{transform:translateY(0) scale(1);opacity:1}}
 @keyframes close-life{0%,100%{transform:scale(1.012) rotate(-1.4deg)}25%{transform:scale(1) rotate(1.2deg)}50%{transform:scale(1.03) rotate(.4deg)}75%{transform:scale(1) rotate(-1.2deg)}}
 .paw-fx{position:absolute;width:20px;height:20px;color:var(--rust);opacity:0;z-index:2;pointer-events:none}
 .paw-fx svg{width:100%;height:100%;fill:currentColor}
-.stage-close .paw-fx{animation:paw-rise 3.4s ease-out}
-.paw-fx.p1{left:32%;top:52%;animation-delay:.9s}
-.paw-fx.p2{left:56%;top:46%;animation-delay:1.5s;width:16px;height:16px}
-.paw-fx.p3{left:44%;top:56%;animation-delay:2.1s;width:24px;height:24px}
-.paw-fx.p4{left:64%;top:54%;animation-delay:2.7s;width:15px;height:15px}
+.stage-close .paw-fx{animation:paw-rise 1.3s ease-out}
+.paw-fx.p1{left:32%;top:52%;animation-delay:.5s}
+.paw-fx.p2{left:56%;top:46%;animation-delay:.85s;width:16px;height:16px}
+.paw-fx.p3{left:44%;top:56%;animation-delay:1.2s;width:24px;height:24px}
+.paw-fx.p4{left:64%;top:54%;animation-delay:1.5s;width:15px;height:15px}
 @keyframes paw-rise{0%{opacity:0;transform:translateY(0) scale(.5) rotate(-18deg)}14%{opacity:.85}70%{opacity:.6}100%{opacity:0;transform:translateY(-150px) scale(1) rotate(16deg)}}
 
 /* —— 中等：藏着 → 探头 → 缩 → 凑近嗅 —— */
+.stage-shy{--cycle:3.4s}
 .stage-shy .react-art img{animation:shy-peek var(--cycle) ease-in-out}
 @keyframes shy-peek{
   0%,17%{clip-path:inset(0 56% 0 0);transform:translateX(0)}
@@ -123,32 +144,32 @@ img{display:block;max-width:100%}
 .stage-gone .speed-fx{animation:whoosh var(--cycle) ease-out}
 @keyframes whoosh{0%,27%{opacity:0;transform:translateX(-46px)}31%{opacity:.75}37%{opacity:0;transform:translateX(46px)}100%{opacity:0}}
 
-/* 旁白按节奏淡入（单次播放，不循环） */
-.stage-close .react-narr .l1{animation:narr-a 3.4s ease-in-out}
-.stage-close .react-narr .l2{animation:narr-a 3.4s ease-in-out .5s}
+/* 旁白按节奏淡入，并在动效收尾前保持可见（单次播放） */
+.stage-close .react-narr .l1{animation:narr-a var(--cycle) ease-in-out}
+.stage-close .react-narr .l2{animation:narr-a var(--cycle) ease-in-out .3s}
 .stage-shy .react-narr .l1{animation:narr-b var(--cycle) ease-in-out}
-.stage-shy .react-narr .l2{animation:narr-b var(--cycle) ease-in-out 1.1s}
+.stage-shy .react-narr .l2{animation:narr-b var(--cycle) ease-in-out .45s}
 .stage-gone .react-narr .l1{animation:narr-c var(--cycle) ease-in-out}
-.stage-gone .react-narr .l2{animation:narr-c var(--cycle) ease-in-out .6s}
-@keyframes narr-a{0%,55%{opacity:0}68%,92%{opacity:1}100%{opacity:0}}
-@keyframes narr-b{0%,38%{opacity:0}52%,90%{opacity:1}100%{opacity:0}}
-@keyframes narr-c{0%,60%{opacity:0}74%,94%{opacity:1}100%{opacity:0}}
+.stage-gone .react-narr .l2{animation:narr-c var(--cycle) ease-in-out .4s}
+@keyframes narr-a{0%,50%{opacity:0;transform:translateY(5px)}64%,100%{opacity:1;transform:none}}
+@keyframes narr-b{0%,36%{opacity:0;transform:translateY(5px)}50%,100%{opacity:1;transform:none}}
+@keyframes narr-c{0%,54%{opacity:0;transform:translateY(5px)}68%,100%{opacity:1;transform:none}}
 @media(prefers-reduced-motion:reduce){
   .stage-close .react-art img,.stage-shy .react-art img,.stage-gone .react-art img,
   .paw-fx,.speed-fx,.react-narr .line{animation-duration:.01s !important;animation-iteration-count:1 !important}
   .react-narr .line{opacity:1}
 }
-.story-head{margin:20px 0 0;text-align:center;position:relative}
-.story-name{font-family:var(--serif);font-size:34px;font-weight:900;letter-spacing:6px;margin:0}
-.story-tags{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:10px}
+.story-head{margin:10px 0 0;text-align:center;position:relative}
+.story-name{font-family:var(--serif);font-size:30px;font-weight:900;letter-spacing:6px;margin:0}
+.story-tags{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-top:8px}
 .tag{font-size:9px;letter-spacing:1.5px;border:1px solid #263f3644;border-radius:20px;padding:3px 10px;color:#52614e;background:#f8efda88}
 .tag-wait{border-color:var(--rust);color:var(--rust);border-style:solid;position:relative}
-.story-portrait{margin:18px auto 0;width:62%;background:#fbf4e4;padding:10px 10px 34px;box-shadow:0 8px 22px #263f3626;transform:rotate(-1.5deg);position:relative}
+.story-portrait{margin:14px auto 0;width:56%;background:#fbf4e4;padding:10px 10px 34px;box-shadow:0 8px 22px #263f3626;transform:rotate(-1.5deg);position:relative}
 .story-portrait .ph{aspect-ratio:1;background:linear-gradient(160deg,#efe6cf,#e4d9bd);display:flex;align-items:center;justify-content:center;color:var(--pine);position:relative;overflow:hidden}
 .story-portrait .ph svg{width:62%;height:62%;fill:currentColor;opacity:.9}
 .story-portrait .cap{position:absolute;bottom:8px;left:0;right:0;text-align:center;font-family:var(--serif);font-size:11px;letter-spacing:2px;color:#8a8268}
-.story-body{margin:22px 0 0;font-family:var(--serif);font-size:15px;line-height:2.15;letter-spacing:1px;color:var(--ink);text-align:justify}
-.story-body p{margin:0 0 14px}
+.story-body{margin:16px 0 0;font-family:var(--serif);font-size:15px;line-height:2.1;letter-spacing:1px;color:var(--ink);text-align:justify}
+.story-body p{margin:0 0 12px}
 .story-body .hot{color:var(--rust);border-bottom:1px dashed var(--rust);font-weight:700;cursor:pointer;white-space:nowrap}
 .story-body .quote{margin:18px 0 4px;padding:14px 16px;background:var(--pine);color:var(--cream);border-radius:3px;font-size:16px;line-height:2;letter-spacing:2px;text-align:center;position:relative}
 .story-body .quote:before{content:"“";position:absolute;top:-6px;left:8px;font-size:38px;color:var(--ochre);opacity:.7;font-family:Georgia,serif}
@@ -156,7 +177,7 @@ img{display:block;max-width:100%}
 .family-row svg{width:14px;height:14px;fill:currentColor}
 
 /* ===== 4. 留言 + 共鸣卡 ===== */
-.say-chips{display:flex;flex-wrap:wrap;gap:9px;margin:18px 0 0;justify-content:center}
+.say-chips{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0 0;justify-content:center}
 .chip{border:1.5px solid #263f3655;background:#f8efda99;border-radius:24px;padding:9px 16px;font-family:var(--serif);font-size:13px;letter-spacing:1.5px;color:var(--ink);cursor:pointer}
 .chip.on{background:var(--pine);color:var(--cream);border-color:var(--pine)}
 .say-input{margin-top:14px}
@@ -164,7 +185,7 @@ img{display:block;max-width:100%}
 .say-input input:focus{border-color:var(--rust)}
 
 /* 共鸣卡（明信片） */
-.card{margin:26px auto 0;width:100%;max-width:350px;background:var(--cream) url("assets/paper-grain.png");border:1.5px solid var(--pine);outline:1px solid var(--pine);outline-offset:5px;padding:18px 18px 16px;position:relative;box-shadow:0 14px 34px #263f3633}
+.card{margin:18px auto 0;width:100%;max-width:330px;background:var(--cream) url("assets/paper-grain.png");border:1.5px solid var(--pine);outline:1px solid var(--pine);outline-offset:5px;padding:16px 16px 14px;position:relative;box-shadow:0 14px 34px #263f3633}
 .card-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
 .card-head .kicker{font-size:8px;letter-spacing:2px;color:#7c806d;line-height:1.8}
 .card-head .kicker b{display:block;font-family:var(--serif);font-size:12px;letter-spacing:3px;color:var(--pine)}
@@ -172,7 +193,7 @@ img{display:block;max-width:100%}
 .card-rule{height:1px;background:var(--pine);opacity:.55;margin:12px 0 14px;position:relative}
 .card-rule:after{content:"";position:absolute;right:0;top:-2px;width:5px;height:5px;border-radius:50%;background:var(--pine)}
 .card-cat{display:flex;gap:14px;align-items:center}
-.card-cat .polaroid{width:96px;flex:none;background:#fffaf0;padding:6px 6px 20px;box-shadow:0 4px 10px #263f362e;transform:rotate(-2deg)}
+.card-cat .polaroid{width:88px;flex:none;background:#fffaf0;padding:6px 6px 18px;box-shadow:0 4px 10px #263f362e;transform:rotate(-2deg)}
 .card-cat .polaroid .ph{aspect-ratio:1;background:linear-gradient(160deg,#efe6cf,#e2d7ba);display:flex;align-items:center;justify-content:center;color:var(--pine)}
 .card-cat .polaroid .ph svg{width:64%;height:64%;fill:currentColor}
 .card-cat .polaroid span{position:absolute}
@@ -181,10 +202,14 @@ img{display:block;max-width:100%}
 .card-cat .meta .tags{margin-top:6px;display:flex;flex-wrap:wrap;gap:4px}
 .card-cat .meta .tags em{font-style:normal;font-size:8px;letter-spacing:1px;border:1px solid #263f3644;border-radius:12px;padding:2px 7px;color:#52614e}
 .card-cat .meta .wait{display:inline-block;margin-top:8px;font-size:8px;letter-spacing:2px;color:var(--rust);border:1px solid var(--rust);border-radius:3px;padding:2px 8px;transform:rotate(-3deg)}
-.card-quote{margin:14px 0 0;font-family:var(--serif);font-size:15px;line-height:2;letter-spacing:2px;color:var(--ink);text-align:center;font-weight:700}
-.card-say{margin:12px 0 0;text-align:right;font-family:var(--serif);font-size:13px;letter-spacing:1.5px;color:#6b5a44}
-.card-say:before{content:"—— ";color:var(--ochre)}
-.card-dash{border-top:1.5px dashed #263f3644;margin:14px 0 10px}
+.card-quote{margin:12px 0 0;font-family:var(--serif);font-size:15px;line-height:1.95;letter-spacing:2px;color:var(--ink);text-align:center;font-weight:700}
+/* 留言区：留出足够位置，卡片的主角之一 */
+.card-saybox{margin:11px 0 0;padding:10px 13px 12px;background:#fffaf0;border:1px dashed #263f3644;border-radius:3px}
+.saybox-label{display:block;font-size:8px;letter-spacing:2.5px;color:var(--ochre);margin-bottom:5px}
+.card-say{margin:0;font-family:var(--serif);font-size:16px;line-height:1.85;letter-spacing:1.5px;color:var(--ink);text-align:center;min-height:3.7em;word-break:break-word}
+.card-say:before{content:"「";color:var(--ochre)}
+.card-say:after{content:"」";color:var(--ochre)}
+.card-dash{border-top:1.5px dashed #263f3644;margin:11px 0 9px}
 .card-foot{display:flex;align-items:center;gap:10px}
 .card-foot .me-avatar{width:38px;height:38px;border-radius:50%;overflow:hidden;flex:none;border:1.5px solid var(--ochre)}
 .card-foot .me-avatar img{width:100%;height:100%;object-fit:cover}
@@ -195,7 +220,7 @@ img{display:block;max-width:100%}
 .card-foot .days b{font-family:Georgia,serif;font-size:22px;color:var(--rust);display:block;line-height:1}
 .card-foot .days span{font-size:7px;letter-spacing:1px;color:#8a8268}
 .postmark{position:absolute;left:14px;bottom:96px;width:78px;height:78px;transform:rotate(-14deg);opacity:.55;pointer-events:none}
-.save-row{display:flex;gap:10px;margin-top:20px}
+.save-row{display:flex;gap:10px;margin-top:16px}
 .save-row .btn{flex:1}
 .save-note{margin:12px 0 0;text-align:center;font-size:9px;letter-spacing:1.5px;color:#8a8268;line-height:1.8}
 
@@ -225,17 +250,19 @@ img{display:block;max-width:100%}
 /* 反应标签随性格变色 */
 .stage-close .react-mood-label{border-color:var(--rust);color:var(--rust)}
 .stage-gone .react-mood-label{border-color:var(--muted);color:var(--muted)}
-/* 故事区：反应演完才展开 */
-#storyArea{display:none}
-#storyArea.show{display:block;animation:fadein .7s ease both}
+/* 故事区：已独立成页，直接呈现 */
+#storyArea{animation:fadein .5s ease both}
 /* 「有家了」绿色标签 */
 .tag-home,.wait.home{border-color:#5c7a4f;color:#5c7a4f}
 /* 有照片时的照片位（绝对值铺满） */
 .story-portrait .ph img,.card-cat .polaroid .ph img,.wall-card .ph img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
-/* 摸猫页我的身份条 */
-.me-strip{margin-top:16px;text-align:center;color:#67715e;font-family:var(--serif);font-size:12px;letter-spacing:1px;display:flex;align-items:center;justify-content:center;gap:6px;line-height:1.6}
-.me-strip span svg{width:14px;height:14px;fill:var(--rust);vertical-align:-2px}
+/* 摸猫页我的身份条 + 遇见进度 */
+.me-strip{margin-top:14px;text-align:center;color:#67715e;font-family:var(--serif);font-size:12px;letter-spacing:1px;display:flex;flex-direction:column;align-items:center;gap:9px;line-height:1.6}
+.me-strip .me-line{display:flex;align-items:center;gap:6px}
+.me-strip .me-line svg{width:14px;height:14px;fill:var(--rust)}
 .me-strip b{color:var(--rust)}
+.me-progress{display:block;width:58%;max-width:180px;height:4px;border-radius:2px;background:#263f361f;overflow:hidden}
+.me-progress i{display:block;height:100%;background:var(--rust);border-radius:2px;transition:width .45s ease}
 /* 相册选图 */
 .album-has{border-color:var(--rust);border-style:solid}
 .album-has img{width:100%;height:100%;object-fit:cover;border-radius:50%}
@@ -246,44 +273,56 @@ img{display:block;max-width:100%}
 
 /* ===== 0. 封面（首页视图，原 index 视觉原样并入） ===== */
 .masthead .edition{font-size:8px;letter-spacing:1px;white-space:nowrap;color:#77806d;margin-right:auto}
-#v-cover{min-height:100svh}
+/* 封面撑满画框剩余高度，场景图吃掉全部剩余空间（按钮下方不留空） */
+#v-cover.active{display:flex;flex-direction:column;flex:1 1 auto;min-height:0}
 /* 倒计时主角区 */
-#v-cover .hero{padding:26px 27px 0;position:relative;z-index:1}
+#v-cover .hero{padding:18px 27px 0;position:relative;z-index:1;flex:none}
 #v-cover .hero-label{margin:0;font-size:11px;letter-spacing:3px;color:#697462}
-#v-cover .hero-count{display:flex;align-items:baseline;gap:10px;margin:6px 0 0;position:relative}
-#v-cover .hero-count b{font-family:Georgia,"Times New Roman",serif;font-weight:700;font-size:118px;line-height:.9;color:var(--rust);font-variant-numeric:lining-nums;letter-spacing:-2px;text-shadow:0 3px 0 #aa4d311f}
-#v-cover .hero-count em{font-style:normal;font-family:var(--serif);font-size:28px;color:var(--rust);letter-spacing:3px;font-weight:700;margin-left:2px}
+#v-cover .hero-count{display:flex;align-items:baseline;gap:10px;margin:4px 0 0;position:relative}
+#v-cover .hero-count b{font-family:Georgia,"Times New Roman",serif;font-weight:700;font-size:96px;line-height:.9;color:var(--rust);font-variant-numeric:lining-nums;letter-spacing:-2px;text-shadow:0 3px 0 #aa4d311f}
+#v-cover .hero-count em{font-style:normal;font-family:var(--serif);font-size:24px;color:var(--rust);letter-spacing:3px;font-weight:700;margin-left:2px}
 #v-cover .side-note{position:absolute;top:6px;right:0;transform:rotate(7deg);text-align:center;border:1px solid #aa4d3170;color:var(--rust);padding:8px 9px 6px;background:#f4ebd866}
 #v-cover .side-note span{display:block;font-family:var(--serif);font-size:15px;font-weight:700;letter-spacing:3px;line-height:1.4}
 #v-cover .side-note span+span{font-family:var(--body);font-size:8px;letter-spacing:1px;margin-top:3px;padding-top:4px;border-top:1px solid #aa4d3145}
 #v-cover .side-note i{display:block;font-style:normal;font-size:7px;letter-spacing:.5px;margin-top:5px}
-#v-cover .hero h1{font-family:var(--serif);font-size:37px;line-height:1.28;letter-spacing:3px;font-weight:900;margin:14px 0 0}
+#v-cover .hero h1{font-family:var(--serif);font-size:33px;line-height:1.26;letter-spacing:3px;font-weight:900;margin:10px 0 0}
 #v-cover .home-word{color:var(--rust);position:relative;display:inline-block}
-#v-cover .home-word svg{position:absolute;left:-2px;bottom:-7px;width:46px;height:11px;fill:none;stroke:var(--rust);stroke-width:2.4;stroke-linecap:round}
-#v-cover .hero-sub{margin:12px 0 0;color:#67715e;font-family:var(--serif);font-size:13px;line-height:1.8;letter-spacing:2px}
-/* 插画场景 */
-#v-cover .scene{margin:16px 0 0;position:relative;isolation:isolate}
-#v-cover .scene-slice{width:100%;height:auto;display:block}
+#v-cover .home-word svg{position:absolute;left:-2px;bottom:-7px;width:42px;height:11px;fill:none;stroke:var(--rust);stroke-width:2.4;stroke-linecap:round}
+#v-cover .hero-sub{margin:10px 0 0;color:#67715e;font-family:var(--serif);font-size:12.5px;line-height:1.75;letter-spacing:2px}
+/* 插画场景：吃掉剩余高度，只居中裁切露出猫带 */
+#v-cover .scene{margin:12px 0 0;flex:1 1 0;min-height:96px;overflow:hidden;display:flex;flex-direction:column;justify-content:center;position:relative;isolation:isolate}
+#v-cover .scene-slice{width:100%;height:auto;flex:none;display:block}
 #v-cover .scene:before,#v-cover .scene:after{content:"";position:absolute;left:0;right:0;pointer-events:none;z-index:1}
 #v-cover .scene:before{top:0;height:39px;background:linear-gradient(var(--paper),transparent)}
 #v-cover .scene:after{bottom:0;height:47px;background:linear-gradient(transparent,var(--paper))}
 #v-cover .scene figcaption{position:absolute;bottom:12px;left:0;right:0;text-align:center;z-index:2;color:#52614e;font-family:var(--serif);font-size:11px;letter-spacing:2px;text-shadow:0 1px 8px var(--paper)}
 /* 入口区 */
-#v-cover .invitation{position:relative;padding:2px 27px 24px;background:var(--paper) url("assets/paper-grain.png")}
-#v-cover .context{margin:0 0 16px;font-family:var(--serif);font-size:16px;letter-spacing:1.5px;text-align:center}
+#v-cover .invitation{position:relative;flex:none;padding:0 27px 18px;background:var(--paper) url("assets/paper-grain.png")}
+#v-cover .context{margin:0 0 12px;font-family:var(--serif);font-size:16px;letter-spacing:1.5px;text-align:center}
 #v-cover .context strong{font-weight:700}
 #v-cover .enter{display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:56px;width:100%;border:0;cursor:pointer;background:var(--pine);color:#f8efda;text-decoration:none;padding:15px 22px;font-family:var(--serif);font-size:19px;letter-spacing:3px;border-radius:3px;box-shadow:0 3px 0 #c1bda5;transition:background .2s,transform .2s}
 #v-cover .enter svg{width:33px;height:20px;stroke:currentColor;stroke-width:1.2;fill:none}
 #v-cover .enter:hover{background:#355648}
 #v-cover .enter:active{transform:translateY(2px)}
 #v-cover .enter:focus-visible{outline:3px solid var(--rust);outline-offset:4px}
-#v-cover .closing{display:flex;justify-content:space-between;gap:8px;font-size:8px;letter-spacing:.8px;margin:15px 0 0;color:#7c806d}
+#v-cover .closing{display:flex;justify-content:space-between;gap:8px;font-size:8px;letter-spacing:.8px;margin:12px 0 0;color:#7c806d}
 @media(max-width:360px){
   #v-cover .hero{padding-left:22px;padding-right:22px}
-  #v-cover .hero-count b{font-size:96px}#v-cover .hero-count em{font-size:23px}
-  #v-cover .hero h1{font-size:32px}
+  #v-cover .hero-count b{font-size:82px}#v-cover .hero-count em{font-size:20px}
+  #v-cover .hero h1{font-size:29px}
   #v-cover .side-note{right:-4px;padding:7px 8px 5px}#v-cover .side-note span{font-size:13px}
   #v-cover .invitation{padding-left:22px;padding-right:22px}
   #v-cover .closing{font-size:7px}
 }
 @media(prefers-reduced-motion:reduce){#v-cover .enter{transition:none}}
+
+/* 矮屏（iPhone 8 / SE 一类）：文字区收一档，把空间让给场景插画 */
+@media(max-height:720px){
+  #v-cover .hero{padding-top:12px}
+  #v-cover .hero-count b{font-size:76px}
+  #v-cover .hero-count em{font-size:20px}
+  #v-cover .hero h1{font-size:28px;margin-top:8px}
+  #v-cover .hero-sub{margin-top:8px}
+  #v-cover .scene{margin-top:10px}
+  #v-cover .invitation{padding-bottom:12px}
+}

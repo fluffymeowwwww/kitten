@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f4ebd8">
   <title>同创汇猫咪故事馆 · 摸一摸小猫</title>
+  <link rel="icon" href="data:,">
   <link rel="stylesheet" href="story.css">
 </head>
 <body>
@@ -95,7 +96,6 @@
     <span class="brand"><svg viewBox="0 0 24 24"><path d="M5 11 3 3l6 3h6l6-3-2 8v5c0 7-14 7-14 0z"/><path d="M8 13h.01M16 13h.01M10 17l2 1 2-1"/></svg>同创汇猫咪故事馆</span>
     <span class="edition">VOL. 01 / 秋日来信</span>
     <div class="mast-actions">
-      <button class="abtn" type="button" data-action="gotoWall">图鉴</button>
       <button class="abtn abtn-back" type="button" data-action="back" hidden>返回</button>
     </div>
   </header>
@@ -129,9 +129,9 @@
   <!-- ============ 1. 入馆登记（首次） ============ -->
   <section class="view" id="v-welcome">
     <div class="view-inner">
-      <h2 class="view-title">入馆登记</h2>
+      <h2 class="view-title">留个名字吧</h2>
       <div class="title-orn"><i></i><svg viewBox="0 0 24 24"><use href="#i-paw"/></svg><i></i></div>
-      <p class="view-sub">留个名字，<br>你摸过的猫，才好把你记住。</p>
+      <p class="view-sub">你写的留言要有个署名。<br>这个名字和头像，会一起印在共鸣卡上。</p>
 
       <div class="field">
         <label>选一个头像（也可以用自己的照片）</label>
@@ -149,7 +149,7 @@
       </div>
 
       <div style="margin-top:24px">
-        <button class="btn btn-rust" type="button" data-action="enter"><svg viewBox="0 0 24 24"><use href="#i-paw"/></svg><span>推开馆门</span></button>
+        <button class="btn btn-rust" type="button" data-action="enter"><svg viewBox="0 0 24 24"><use href="#i-paw"/></svg><span>下一步 · 给 TA 写留言</span></button>
       </div>
       <p class="privacy-note">
         <svg viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg>
@@ -171,16 +171,14 @@
 
       <div class="pet-actions">
         <button class="btn" type="button" data-action="draw"><svg viewBox="0 0 24 24"><use href="#i-paw"/></svg><span>伸手摸摸</span></button>
-        <button class="btn btn-ghost" type="button" data-action="draw">或闭上眼睛，让猫挑你（随机）</button>
       </div>
       <p class="me-strip" id="meStrip" hidden></p>
     </div>
   </section>
 
-  <!-- ============ 3. 反应动效 + 故事 ============ -->
-  <section class="view" id="v-story">
+  <!-- ============ 3. 反应动效（摸到瞬间，独立一页） ============ -->
+  <section class="view" id="v-react">
     <div class="view-inner">
-      <!-- 摸到瞬间：三档性格反应动效（单次播放） -->
       <div class="react-stage" id="reactStage">
         <span class="react-mood-label" id="reactMood"><b>亲人</b></span>
         <div class="react-art">
@@ -194,9 +192,21 @@
           <span class="speed-fx s3"></span>
         </div>
         <p class="react-narr" id="reactNarr"></p>
+        <div class="react-reveal" id="reactReveal">
+          <span class="reveal-lead">你摸到的是</span>
+          <b class="reveal-name" id="revealName">铁白</b>
+        </div>
       </div>
 
-      <!-- 故事 -->
+      <div class="react-actions">
+        <button class="btn btn-ghost" type="button" data-action="skipReact">看看 TA 的故事</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 4. 故事 ============ -->
+  <section class="view" id="v-story">
+    <div class="view-inner">
       <div class="reaction-done" id="storyArea">
         <div class="title-orn"><i></i><svg viewBox="0 0 24 24"><use href="#i-paw"/></svg><i></i></div>
 
@@ -221,7 +231,7 @@
     </div>
   </section>
 
-  <!-- ============ 4. 留言 + 共鸣卡 ============ -->
+  <!-- ============ 5. 留言 + 共鸣卡 ============ -->
   <section class="view" id="v-card">
     <div class="view-inner">
       <h2 class="view-title" style="font-size:23px">想对 TA 说点什么？</h2>
@@ -251,7 +261,10 @@
           </div>
         </div>
         <p class="card-quote" id="cardQuote"></p>
-        <p class="card-say" id="cardSay">TA，我记住你了</p>
+        <div class="card-saybox">
+          <span class="saybox-label">我想对 TA 说</span>
+          <p class="card-say" id="cardSay">TA，我记住你了</p>
+        </div>
         <div class="card-dash"></div>
         <div class="card-foot">
           <div class="me-avatar" id="cardAvatar"></div>
@@ -267,7 +280,7 @@
         <button class="btn btn-rust" type="button" data-action="saveCard"><span>保存卡片</span></button>
         <button class="btn btn-ghost" type="button" data-action="draw">再摸一只</button>
       </div>
-      <p class="save-note">保存图片发笔记，让更多人知道 TA 在等家。</p>
+      <p class="save-note">保存这张卡片，贴到小红书笔记的评论区——<br>让更多人看见 TA，也多一分被领养的机会。</p>
 
       <!-- 生成的卡片图片（保存后出现，可长按/下载） -->
       <div class="saved-wrap" id="savedWrap" hidden>
@@ -280,7 +293,7 @@
     </div>
   </section>
 
-  <!-- ============ 5. 图鉴（猫墙） ============ -->
+  <!-- ============ 6. 全部小猫（原图鉴） ============ -->
   <section class="view" id="v-wall">
     <div class="view-inner">
       <h2 class="view-title">馆里的住客</h2>
@@ -293,6 +306,22 @@
   </section>
 
 </div>
+
+<!-- 底部导航 -->
+<nav class="tabbar" id="tabbar" aria-label="主导航">
+  <button class="tab" type="button" data-action="tab" data-tab="v-cover">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 10.5 12 3l9 7.5"/><path d="M5.5 9.6V20h13V9.6"/><path d="M10 20v-5.4h4V20"/></svg>
+    <span>首页</span>
+  </button>
+  <button class="tab" type="button" data-action="tab" data-tab="v-pet">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-paw"/></svg>
+    <span>摸一摸小猫</span>
+  </button>
+  <button class="tab" type="button" data-action="tab" data-tab="v-wall">
+    <svg viewBox="0 0 24 24" aria-hidden="true"><use href="#i-cat-trio"/></svg>
+    <span>查看全部小猫</span>
+  </button>
+</nav>
 
 <input type="file" id="filePick" accept="image/*" hidden>
 <script src="cats.js"></script>
