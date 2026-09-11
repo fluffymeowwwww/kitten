@@ -508,7 +508,7 @@
       id: "a18", name: "脏脏包1.0", pool: false,
       mood: null, color: "白猫", gender: "公猫", sterilized: false,
       status: "lost", family: "", area: "同创", silhouette: "sit",
-      photo: null, has_photo: false,
+      photo: "a18.jpg", has_photo: true,
       note: "未绝育-失踪",
       relations: [
         { label: "同事", names: ["大华"] },
