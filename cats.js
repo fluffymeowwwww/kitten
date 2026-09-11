@@ -900,7 +900,7 @@
       id: "a52", name: "顺顺", pool: false,
       mood: null, color: "橘白", gender: "公猫", sterilized: true,
       status: "home", family: "小队家族", area: "同创", silhouette: "sit",
-      photo: null, has_photo: false,
+      photo: "a52.jpg", has_photo: true,
       relations: [
         { label: "妻", names: ["利利"] },
         { label: "（非亲生）子女", names: ["小队", "卡姿兰", "大队", "红头发", "扎染"] },
@@ -911,7 +911,7 @@
       id: "a53", name: "利利", pool: false,
       mood: null, color: "简州猫", gender: "母猫", sterilized: true,
       status: "home", family: "小队家族", area: "同创", silhouette: "sit",
-      photo: null, has_photo: false,
+      photo: "a53.jpg", has_photo: true,
       relations: [
         { label: "夫", names: ["顺顺"] },
         { label: "子女", names: ["小队", "卡姿兰", "大队", "红头发", "扎染"] },
@@ -1069,7 +1069,7 @@
       id: "a67", name: "奶糖", pool: false,
       mood: null, color: "白猫", gender: "母猫", sterilized: true,
       status: "home", family: "", area: "创投", silhouette: "sit",
-      photo: null, has_photo: false,
+      photo: "a67.jpg", has_photo: true,
       relations: [
         { label: "", names: [], text: "独来独往" },
       ],
@@ -1114,7 +1114,7 @@
     {
       id: "a71", name: "虎皮", pool: false,
       mood: null, color: "橘猫", gender: "公猫", sterilized: true,
-      status: "wait", family: "小队家族", area: "同创", silhouette: "sit",
+      status: "lost", family: "小队家族", area: "同创", silhouette: "sit",
       photo: "a71.jpg", has_photo: true,
       relations: [
         { label: "", names: [], text: "未知" },
@@ -1125,7 +1125,7 @@
       id: "a72", name: "拘谨", pool: false,
       mood: null, color: "长毛橘白", gender: "母猫", sterilized: true,
       status: "home", family: "大脸家族", area: "同创", silhouette: "sit",
-      photo: null, has_photo: false,
+      photo: "a72.jpg", has_photo: true,
       relations: [
         { label: "前男友", names: ["大脸"] },
       ],
@@ -1238,14 +1238,14 @@
       id: "a84", name: "富太", pool: false,
       mood: null, color: "简州猫", gender: "母猫", sterilized: true,
       status: "home", family: "", area: "同创", silhouette: "sit",
-      photo: null, has_photo: false,
+      photo: "a84.jpg", has_photo: true,
       story: [], quote: ""
     },
     {
       id: "a85", name: "东东", pool: false,
       mood: null, color: "狸白猫", gender: "公猫", sterilized: false,
       status: "lost", family: "", area: "创投", silhouette: "sit",
-      photo: null, has_photo: false,
+      photo: "a85.jpg", has_photo: true,
       note: "未绝育-受伤救助-失踪",
       story: [], quote: ""
     },
@@ -1321,6 +1321,15 @@
       status: "home", family: "", area: "创投", silhouette: "sit",
       photo: "a93.jpg", has_photo: true,
       note: "已领养",
+      relations: [],
+      story: [], quote: ""
+    },
+    {
+      id: "a94", name: "大猫", pool: false,
+      mood: null, color: "狸白", gender: "公猫", sterilized: true,
+      status: "lost", family: "狸花之家", area: "同创", silhouette: "sit",
+      photo: "a94.jpg", has_photo: true,
+      note: "已绝育-失踪",
       relations: [],
       story: [], quote: ""
     }
