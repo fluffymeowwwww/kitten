@@ -626,7 +626,7 @@
       id: "a28", name: "南瓜", pool: false,
       mood: null, color: "橘白", gender: "公猫", sterilized: true,
       status: "lost", family: "瓜瓜家族", area: "同创", silhouette: "sit",
-      photo: null, has_photo: false,
+      photo: "a28.jpg", has_photo: true,
       note: "已绝育-失踪",
       relations: [
         { label: "妈妈", names: ["瓜瓜"] },
@@ -640,7 +640,7 @@
       id: "a29", name: "彩瓜", pool: false,
       mood: null, color: "彩狸", gender: "母猫", sterilized: false,
       status: "lost", family: "瓜瓜家族", area: "同创", silhouette: "sit",
-      photo: null, has_photo: false,
+      photo: "a29.jpg", has_photo: true,
       note: "未绝育-失踪",
       relations: [
         { label: "妈妈", names: ["瓜瓜"] },
@@ -654,7 +654,7 @@
       id: "a30", name: "黄瓜", pool: false,
       mood: null, color: "全橘", gender: "公猫", sterilized: true,
       status: "lost", family: "瓜瓜家族", area: "同创", silhouette: "sit",
-      photo: null, has_photo: false,
+      photo: "a30.jpg", has_photo: true,
       note: "已绝育-失踪",
       relations: [
         { label: "妈妈", names: ["瓜瓜"] },
@@ -668,7 +668,7 @@
       id: "a31", name: "橘瓜", pool: false,
       mood: null, color: "橘白", gender: "母猫", sterilized: true,
       status: "star", family: "瓜瓜家族", area: "", silhouette: "sit",
-      photo: null, has_photo: false,
+      photo: "a31.jpg", has_photo: true,
       note: "已绝育-猫瘟回喵星",
       relations: [
         { label: "妈妈", names: ["瓜瓜"] },
