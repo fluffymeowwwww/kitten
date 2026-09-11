@@ -434,7 +434,7 @@
       id: "a11", name: "小怪", pool: false,
       mood: null, color: "奶牛", gender: "公猫", sterilized: true,
       status: "home", family: "", area: "创投", silhouette: "sit",
-      photo: null, has_photo: false,
+      photo: "a11.jpg", has_photo: true,
       relations: [
         { label: "兄弟", names: ["大怪"] },
       ],
@@ -465,7 +465,7 @@
       id: "a14", name: "咩咩", pool: false,
       mood: null, color: "黑猫", gender: "母猫", sterilized: true,
       status: "home", family: "", area: "同创", silhouette: "sit",
-      photo: null, has_photo: false,
+      photo: "a14.jpg", has_photo: true,
       relations: [
         { label: "义姐", names: ["斜刘海"] },
       ],
@@ -966,7 +966,7 @@
       id: "a58", name: "黑小宝", pool: false,
       mood: null, color: "黑猫", gender: "公猫", sterilized: true,
       status: "home", family: "", area: "创投", silhouette: "sit",
-      photo: null, has_photo: false,
+      photo: "a58.jpg", has_photo: true,
       relations: [
         { label: "", names: [], text: "独来独往" },
       ],
