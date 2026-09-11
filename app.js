@@ -167,7 +167,7 @@
       var el = document.getElementById(views[i]);
       if (el) el.classList.toggle("active", views[i] === id);
     }
-    window.scrollTo(0, 0);
+    if (id !== "v-wall") window.scrollTo(0, 0);   // 手册页滚动位置由调用方控制（返回时恢复）
     updateBackBtn(id);
     updateTabs(id);
   }
@@ -181,8 +181,10 @@
     for (var i = 0; i < tabs.length; i++) tabs[i].classList.toggle("active", tabs[i].dataset.tab === active);
   }
   var navStack = ["v-cover"];
+  var wallScrollPos = 0;                                              // 手册页滚动位置，从详情返回时恢复
   function push(id) {
     var top = navStack[navStack.length - 1];
+    if (top === "v-wall") wallScrollPos = window.pageYOffset || 0;    // 离开手册时记下位置
     if (TAB_OF[id]) navStack = [id];                                 // 落到导航页＝回到根，清空返回链
     else if (STORY_CHAIN.indexOf(id) !== -1 && STORY_CHAIN.indexOf(top) !== -1) navStack[navStack.length - 1] = id;
     else if (top !== id) navStack.push(id);
@@ -192,6 +194,9 @@
     if (navStack.length > 1) navStack.pop();
     var to = navStack[navStack.length - 1] || "v-pet";
     showView(to);
+    if (to === "v-wall") {
+      requestAnimationFrame(function () { window.scrollTo(0, wallScrollPos); });
+    }
     if (to === "v-pet") updateMeStrip();
   }
 
@@ -985,6 +990,7 @@
     if (id === "v-wall") {
       if (ds && ds.wallFilter && WALL_FILTERS.some(function (f) { return f.id === ds.wallFilter; })) wallFilter = ds.wallFilter;
       renderWall();
+      wallScrollPos = 0;                                                // 点导航进入手册＝重置到顶部
     }
     if (id === "v-pet") updateMeStrip();
     push(id);
