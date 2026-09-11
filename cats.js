@@ -1252,7 +1252,7 @@
     {
       id: "a86", name: "瓜弟", pool: false,
       mood: null, color: "橘白猫", gender: "公猫", sterilized: true,
-      status: "home", family: "", area: "创投", silhouette: "sit",
+      status: "home", family: "瓜瓜家族", area: "创投", silhouette: "sit",
       photo: "a86.jpg", has_photo: true,
       note: "已绝育-受伤救助-领养",
       story: [], quote: ""
