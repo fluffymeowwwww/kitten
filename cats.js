@@ -32,7 +32,7 @@
    family     家族名（列表按此分组，空字符串表示未归入家族）
    area       归属地
    silhouette 无照片时的剪影造型：'sit' 蹲坐｜'peek' 探头｜'trio' 三只｜'family' 大猫带小猫
-   relations  关系网，[{ label: "妈妈", names: ["棕妈"] }]；
+   relations  关系网，[{ label: "妈妈", names: ["粽妈"] }]；
               label 为空表示原表那句没有冒号（如「独来独往」），原话放 text
    photo      照片文件名（放进 assets/cats/），无照片填 null
    has_photo  是否有照片
@@ -308,7 +308,7 @@
         { label: "女儿", names: ["黄雀", "安妹"] },
         { label: "义女", names: ["粽子"] },
         { label: "义子", names: ["花生"] },
-        { label: "前女友", names: ["棕妈"] },
+        { label: "前女友", names: ["粽妈"] },
       ],
       story: [], quote: ""
     },
@@ -319,7 +319,7 @@
       photo: "a02.jpg", has_photo: true,
       relations: [
         { label: "爸爸", names: ["大黄"] },
-        { label: "妈妈", names: ["棕妈"] },
+        { label: "妈妈", names: ["粽妈"] },
         { label: "姐妹", names: ["安妹"] },
         { label: "同母异父兄弟", names: ["花生"] },
         { label: "前夫", names: ["雀公"] },
@@ -334,7 +334,7 @@
       photo: "a03.jpg", has_photo: true,
       relations: [
         { label: "义父", names: ["大黄"] },
-        { label: "妈妈", names: ["棕妈"] },
+        { label: "妈妈", names: ["粽妈"] },
         { label: "同母异父姐姐", names: ["黄雀", "安妹"] },
         { label: "兄弟", names: ["恰恰"] },
       ],
@@ -348,14 +348,14 @@
       note: "未绝育-失踪",
       relations: [
         { label: "义父", names: ["大黄"] },
-        { label: "妈妈", names: ["棕妈"] },
+        { label: "妈妈", names: ["粽妈"] },
         { label: "同母异父姐姐", names: ["黄雀", "安妹"] },
         { label: "兄弟", names: ["花生"] },
       ],
       story: [], quote: ""
     },
     {
-      id: "a05", name: "棕妈", pool: false,
+      id: "a05", name: "粽妈", pool: false,
       mood: null, color: "三花猫", gender: "母猫", sterilized: false,
       status: "wait", family: "粽妈家族", area: "创投", silhouette: "sit",
       photo: "a05.jpg", has_photo: true,
@@ -373,7 +373,7 @@
       status: "home", family: "粽妈家族", area: "创投", silhouette: "sit",
       photo: "a06.jpg", has_photo: true,
       relations: [
-        { label: "妈妈", names: ["棕妈"] },
+        { label: "妈妈", names: ["粽妈"] },
         { label: "爸爸", names: ["大黄"] },
       ],
       story: [], quote: ""
@@ -423,7 +423,7 @@
       note: "已绝育-失踪",
       relations: [
         { label: "爸爸", names: ["大黄"] },
-        { label: "妈妈", names: ["棕妈"] },
+        { label: "妈妈", names: ["粽妈"] },
         { label: "姐妹", names: ["黄雀"] },
         { label: "同母异父兄弟", names: ["花生"] },
         { label: "被侵犯", names: ["黑警"] },
@@ -1148,7 +1148,7 @@
       status: "wait", family: "", area: "创投", silhouette: "sit",
       photo: "a74.jpg", has_photo: true,
       relations: [
-        { label: "现女友", names: ["棕妈"] },
+        { label: "现女友", names: ["粽妈"] },
       ],
       story: [], quote: ""
     },
