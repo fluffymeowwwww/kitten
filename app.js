@@ -312,8 +312,8 @@
     } else {
       body.appendChild(buildArchive(cat));
     }
-    // 只有有故事的猫才引导写留言（共鸣卡上那句金句来自 story）
-    document.getElementById("toCardWrap").hidden = !hasStory;
+    // v1.5.2：手册里所有猫都能写「我和 TA 的故事」、生成共鸣卡（无金句时卡片自动收起该位）
+    document.getElementById("toCardWrap").hidden = false;
   }
 
   function familyRow(name) {
@@ -473,10 +473,15 @@
     var cat = state.current;
     if (!cat) return;
     document.getElementById("cardName").textContent = cat.name;
-    document.getElementById("cardTags").innerHTML = "<em>" + cat.color + "</em><em>" + cat.gender + "</em><em>" + MOOD_LABEL[cat.mood] + "</em>";
+    // 档案猫 mood 为 null：标签行过滤空位，避免出现 undefined
+    var tags = [cat.color, cat.gender, MOOD_LABEL[cat.mood]].filter(Boolean);
+    document.getElementById("cardTags").innerHTML = tags.map(function (t) { return "<em>" + t + "</em>"; }).join("");
     document.getElementById("cardWait").textContent = (STATUS_TAG[cat.status] || {}).t || "还在等家";
     document.getElementById("cardWait").classList.toggle("home", cat.status === "home");
-    document.getElementById("cardQuote").innerHTML = "「" + cat.quote + "」";
+    // 没有金句的档案猫：整行收起，故事框自然上移
+    var qEl = document.getElementById("cardQuote");
+    if (cat.quote) { qEl.hidden = false; qEl.innerHTML = "「" + cat.quote + "」"; }
+    else { qEl.hidden = true; qEl.innerHTML = ""; }
     renderPhotoSlot(document.getElementById("cardPhoto"), cat);
     document.getElementById("cardNick").textContent = state.me.nick || DEFAULT_NICK;
     document.getElementById("cardDays").textContent = daysLeft();
@@ -668,17 +673,23 @@
       txt(stLabel, 0, 6, 18, stColor, "center", 700, "2px");
       ctx.restore();
 
-      /* —— 金句：居中粗体，自带「」（v1.4 压缩字号，给故事让版面） —— */
-      var qSize = 28, qLH = 42, qTop = 408;
-      var qLines = wrapLines("「" + cat.quote + "」", R - L, qSize, 700, "1px");
-      qLines.forEach(function (l, i) {
-        txt(l, W / 2, qTop + i * qLH, qSize, ink, "center", 700, "1px");
-      });
-      var quoteBottom = qTop + qLines.length * qLH;
+      /* —— 金句：居中粗体，自带「」（v1.4 压缩字号，给故事让版面）
+              v1.5.2：档案猫无金句时整段省略，故事框上移接住版面 —— */
+      var sayText = normalizeSay(state.say);
+      var boxX = L, boxW = R - L, boxBottom = 788, boxY;
+      if (cat.quote) {
+        var qSize = 28, qLH = 42, qTop = 408;
+        var qLines = wrapLines("「" + cat.quote + "」", R - L, qSize, 700, "1px");
+        qLines.forEach(function (l, i) {
+          txt(l, W / 2, qTop + i * qLH, qSize, ink, "center", 700, "1px");
+        });
+        boxY = qTop + qLines.length * qLH + 22;
+      } else {
+        // 状态小印章底部 stY+38，留 26px 间隔
+        boxY = stY + 64;
+      }
 
       /* —— 故事框：灰虚线、奶白底；高度弹性吃掉剩余空间（对应 .card-saybox） —— */
-      var sayText = normalizeSay(state.say);
-      var boxX = L, boxW = R - L, boxY = quoteBottom + 22, boxBottom = 788;
       var boxH = boxBottom - boxY;
       ctx.fillStyle = "#fffaf0";
       roundRect(boxX, boxY, boxW, boxH, 8); ctx.fill();
