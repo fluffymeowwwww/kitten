@@ -933,7 +933,7 @@
       id: "a55", name: "努努", pool: false,
       mood: null, color: "银渐层", gender: "母猫", sterilized: null,
       status: "shop", family: "", area: "同创", silhouette: "sit",
-      photo: null, has_photo: false,
+      photo: "a55.jpg", has_photo: true,
       note: "司猫",
       relations: [
         { label: "朋友", names: ["李橘"] },
@@ -944,7 +944,7 @@
       id: "a56", name: "李橘", pool: false,
       mood: null, color: "橘白", gender: "公猫", sterilized: null,
       status: "shop", family: "", area: "同创", silhouette: "sit",
-      photo: null, has_photo: false,
+      photo: "a56.jpg", has_photo: true,
       note: "司猫",
       relations: [
         { label: "朋友", names: ["努努"] },
