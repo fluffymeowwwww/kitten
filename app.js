@@ -864,7 +864,7 @@
     pet.type = "button";
     pet.className = "pet-btn";
     pet.setAttribute("aria-label", "摸摸" + cat.name);
-    pet.innerHTML = '<svg viewBox="0 0 24 24"><use href="#i-paw"/></svg>';
+    pet.innerHTML = '摸摸TA';
     pet.addEventListener("click", function (e) {
       e.stopPropagation();
       petCat(cat);
