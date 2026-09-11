@@ -569,7 +569,7 @@
       id: "a23", name: "叫叫", pool: false,
       mood: null, color: "橘白", gender: "公猫", sterilized: false,
       status: "star", family: "", area: "同创", silhouette: "sit",
-      photo: null, has_photo: false,
+      photo: "a23.jpg", has_photo: true,
       note: "未绝育-突发回喵星",
       relations: [
         { label: "朋友", names: ["猪仔", "瓜瓜"] },
@@ -770,7 +770,7 @@
       id: "a40", name: "朱古力", pool: false,
       mood: null, color: "玳瑁", gender: "母猫", sterilized: false,
       status: "lost", family: "", area: "同创", silhouette: "sit",
-      photo: null, has_photo: false,
+      photo: "a40.jpg", has_photo: true,
       note: "未绝育-失踪",
       relations: [
         { label: "前男友", names: ["话唠"] },
@@ -792,7 +792,7 @@
       id: "a42", name: "哒妹", pool: false,
       mood: null, color: "简州猫", gender: "母猫", sterilized: true,
       status: "star", family: "", area: "同创", silhouette: "sit",
-      photo: null, has_photo: false,
+      photo: "a42.jpg", has_photo: true,
       note: "已绝育-狗咬死回喵星",
       relations: [
         { label: "朋友", names: ["卷姐"] },
