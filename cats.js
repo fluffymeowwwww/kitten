@@ -1281,7 +1281,7 @@
       id: "a88", name: "小胡", pool: false,
       mood: null, color: "狸花加白", gender: "母猫", sterilized: true,
       status: "home", family: "", area: "同创", silhouette: "sit",
-      photo: null, has_photo: false,
+      photo: "a88.jpg", has_photo: true,
       relations: [],
       story: [], quote: ""
     }
