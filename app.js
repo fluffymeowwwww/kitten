@@ -895,6 +895,28 @@
       '<span class="me-progress"><i style="width:' + pct + '%"></i></span>';
   }
 
+  /* ---------- 复制微信号（兼容微信内置浏览器） ---------- */
+  function copyWechat(text, btn) {
+    var old = btn.textContent;
+    var done = function () {
+      btn.textContent = "已复制 ✓";
+      setTimeout(function () { btn.textContent = old; }, 1800);
+    };
+    var fallback = function () {
+      var ta = document.createElement("textarea");
+      ta.value = text;
+      ta.style.position = "fixed"; ta.style.top = "-9999px"; ta.style.opacity = "0";
+      document.body.appendChild(ta); ta.select(); ta.setSelectionRange(0, text.length);
+      try { document.execCommand("copy"); done(); } catch (e) {}
+      document.body.removeChild(ta);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(done).catch(fallback);
+    } else {
+      fallback();
+    }
+  }
+
   /* ---------- 事件委托 ---------- */
   function init() {
     renderSays();
@@ -916,6 +938,7 @@
         case "saveAgain": document.getElementById("cardPrev").style.display = ""; document.getElementById("savedWrap").hidden = true; break;
         case "tab": onTab(t.dataset.tab, t.dataset); break;
         case "back": back(); break;
+        case "copyWechat": copyWechat(t.dataset.wechat, t); break;
       }
     });
 
