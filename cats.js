@@ -865,7 +865,7 @@
       id: "a50", name: "牛弟", pool: false,
       mood: null, color: "橘白猫", gender: "公猫", sterilized: true,
       status: "home", family: "瓜瓜家族", area: "同创", silhouette: "sit",
-      photo: null, has_photo: false,
+      photo: "a50.jpg", has_photo: true,
       relations: [
         { label: "兄弟", names: ["陈铁牛"] },
         { label: "小姨", names: ["瓜瓜"] },
@@ -1133,7 +1133,7 @@
       id: "a74", name: "花臂", pool: false,
       mood: null, color: "雀猫", gender: "公猫", sterilized: true,
       status: "wait", family: "", area: "创投", silhouette: "sit",
-      photo: null, has_photo: false,
+      photo: "a74.jpg", has_photo: true,
       relations: [
         { label: "现女友", names: ["棕妈"] },
       ],
@@ -1203,7 +1203,7 @@
       id: "a81", name: "美食家", pool: false,
       mood: null, color: "奶牛英短", gender: "公猫", sterilized: true,
       status: "foster", family: "", area: "", silhouette: "sit",
-      photo: null, has_photo: false,
+      photo: "a81.jpg", has_photo: true,
       note: "已绝育寄养中-猫艾滋",
       relations: [
         { label: "朋友", names: ["猕唠"] },
@@ -1252,6 +1252,16 @@
       status: "home", family: "", area: "创投", silhouette: "sit",
       photo: null, has_photo: false,
       note: "已绝育-受伤救助-领养",
+      story: [], quote: ""
+    },
+    {
+      id: "a87", name: "屁橘", pool: false,
+      mood: null, color: "橘雀", gender: "母猫", sterilized: true,
+      status: "home", family: "", area: "创投", silhouette: "sit",
+      photo: "a87.jpg", has_photo: true,
+      relations: [
+        { label: "好朋友", names: ["花臂"] },
+      ],
       story: [], quote: ""
     }
   ];
