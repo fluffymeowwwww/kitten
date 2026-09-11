@@ -373,6 +373,14 @@ img{display:block;max-width:100%}
 .mailway p{margin-top:7px;font-size:13px;line-height:1.95}
 .contact-foot{margin:26px 0 4px;text-align:center;font-family:var(--serif);font-size:12px;letter-spacing:4px;color:#7c806d}
 .contact-author{margin:0 0 4px;text-align:center;font-family:var(--serif);font-size:11px;letter-spacing:2px;color:#8a8268}
+/* —— 统一页脚署名 —— */
+.page-foot{margin:22px auto 0;text-align:center;font-family:var(--serif);font-size:11px;letter-spacing:2px;color:#8a8268}
+#v-cover .page-foot{margin-top:6px}
+#v-contact .page-foot{margin:0 0 4px}
+/* —— 安置思路卡片 —— */
+.cnote-plan{transform:rotate(.2deg)}
+.cnote-plan .cnote-ic{background:var(--pine)}
+
 .cnote-wechat{transform:rotate(.3deg)}
 .cnote-wechat .cnote-ic{background:#07c160;box-shadow:0 5px 12px #07c16044}
 .wechat-row{display:flex;flex-direction:column;gap:12px;margin-top:16px}
