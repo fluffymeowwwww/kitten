@@ -922,7 +922,7 @@
       id: "a54", name: "肥波", pool: false,
       mood: null, color: "简州猫", gender: "公猫", sterilized: null,
       status: "shop", family: "", area: "同创", silhouette: "sit",
-      photo: null, has_photo: false,
+      photo: "a54.jpg", has_photo: true,
       note: "司猫",
       relations: [
         { label: "", names: [], text: "独来独往" },
@@ -956,7 +956,7 @@
       id: "a57", name: "唠妹", pool: false,
       mood: null, color: "狸花猫", gender: "母猫", sterilized: true,
       status: "home", family: "", area: "创投", silhouette: "sit",
-      photo: null, has_photo: false,
+      photo: "a57.jpg", has_photo: true,
       relations: [
         { label: "", names: [], text: "独来独往" },
       ],
@@ -1177,7 +1177,7 @@
       id: "a78", name: "瓜妹", pool: false,
       mood: null, color: "橘白", gender: "母猫", sterilized: true,
       status: "lost", family: "", area: "", silhouette: "sit",
-      photo: null, has_photo: false,
+      photo: "a78.jpg", has_photo: true,
       note: "已绝育-失踪",
       relations: [
         { label: "哥哥", names: ["岁岁", "瓜哥"] },
@@ -1217,7 +1217,7 @@
       id: "a82", name: "瓜哥", pool: false,
       mood: null, color: "橘白", gender: "公猫", sterilized: true,
       status: "star", family: "瓜瓜家族", area: "同创", silhouette: "sit",
-      photo: null, has_photo: false,
+      photo: "a82.jpg", has_photo: true,
       note: "已绝育-车祸回喵星",
       relations: [
         { label: "妹妹", names: ["瓜瓜", "瓜妹"] },
@@ -1253,7 +1253,7 @@
       id: "a86", name: "瓜弟", pool: false,
       mood: null, color: "橘白猫", gender: "公猫", sterilized: true,
       status: "home", family: "", area: "创投", silhouette: "sit",
-      photo: null, has_photo: false,
+      photo: "a86.jpg", has_photo: true,
       note: "已绝育-受伤救助-领养",
       story: [], quote: ""
     },
@@ -1283,6 +1283,26 @@
       note: "已绝育-失踪",
       relations: [
         { label: "爸爸", names: ["大黄"] },
+      ],
+      story: [], quote: ""
+    },
+    {
+      id: "a90", name: "多乐", pool: false,
+      mood: null, color: "狸花猫", gender: "母猫", sterilized: true,
+      status: "shop", family: "", area: "同创", silhouette: "sit",
+      photo: "a90.jpg", has_photo: true,
+      note: "司猫",
+      relations: [],
+      story: [], quote: ""
+    },
+    {
+      id: "a91", name: "小菲", pool: false,
+      mood: null, color: "彩狸", gender: "母猫", sterilized: true,
+      status: "shop", family: "", area: "同创", silhouette: "sit",
+      photo: "a91.jpg", has_photo: true,
+      note: "司猫",
+      relations: [
+        { label: "认识", names: ["黑警"] },
       ],
       story: [], quote: ""
     }
