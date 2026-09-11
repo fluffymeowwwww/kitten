@@ -219,8 +219,8 @@
   /* ---------- 摸猫：摸到瞬间（名字与简介立即可见，动效照播一遍） ---------- */
   var reactTimer = null;
 
-  function draw() {
-    var cat = nextCat();
+  // 摸猫：抽取摸猫（首页 draw）只从待安排池里抽；主动摸猫（手册 petCat）任意猫都能摸
+  function petCat(cat) {
     state.current = cat;
     markPetted(cat.id);
     updateMeStrip();
@@ -228,6 +228,7 @@
     navStack = ["v-pet"];                   // 新的一次摸猫：返回链从摸猫页重新开始
     push("v-react");
   }
+  function draw() { petCat(nextCat()); }
 
   function playReaction(cat) {
     if (reactTimer) { clearTimeout(reactTimer); reactTimer = null; }
@@ -857,6 +858,19 @@
     ph.className = "ph";
     renderPhotoSlot(ph, cat);
     card.appendChild(ph);
+
+    // 主动摸猫：点右下角小圆按钮直接播反应动效（任意猫都能摸，不限待安排池）
+    var pet = document.createElement("button");
+    pet.type = "button";
+    pet.className = "pet-btn";
+    pet.setAttribute("aria-label", "摸摸" + cat.name);
+    pet.innerHTML = '<svg viewBox="0 0 24 24"><use href="#i-paw"/></svg>';
+    pet.addEventListener("click", function (e) {
+      e.stopPropagation();
+      petCat(cat);
+    });
+    ph.appendChild(pet);
+
     var h5 = document.createElement("h5"); h5.textContent = cat.name; card.appendChild(h5);
     var sm = document.createElement("small");
     sm.textContent = cat.color + " · " + cat.gender;

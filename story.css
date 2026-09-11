@@ -226,6 +226,11 @@ img{display:block;max-width:100%}
 .wall-card small{display:block;font-size:8px;letter-spacing:1.5px;color:#8a8268;margin-top:3px}
 .wall-card .pawmark{position:absolute;top:6px;right:7px;width:20px;height:20px;color:var(--rust);transform:rotate(12deg);z-index:2}
 .wall-card .pawmark svg{width:100%;height:100%;fill:currentColor}
+/* 主动摸猫：照片右下角小圆按钮，任意猫都能摸；与右上角已摸 pawmark 区分（带圆底+描边） */
+.wall-card .ph .pet-btn{position:absolute;right:7px;bottom:7px;z-index:3;width:40px;height:40px;border-radius:50%;background:rgba(251,244,228,.95);border:1.8px solid var(--rust);color:var(--rust);display:flex;align-items:center;justify-content:center;padding:0;cursor:pointer;box-shadow:0 2px 8px rgba(38,63,54,.3);transition:transform .12s}
+.wall-card .ph .pet-btn svg{width:20px;height:20px;fill:currentColor}
+.wall-card .ph .pet-btn:active{transform:scale(.9)}
+.wall-card.st-star .ph .pet-btn,.wall-card.st-lost .ph .pet-btn{border-color:#7c806d;color:#7c806d;opacity:.72}
 .wall-card.wide{grid-column:1 / -1}
 .wall-card.wide .ph{aspect-ratio:2.4/1}
 /* 状态角标 */
