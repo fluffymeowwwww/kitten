@@ -810,11 +810,11 @@
       story: [], quote: ""
     },
     {
-      id: "a44", name: "大吉", pool: false,
-      mood: null, color: "简州猫？", gender: "公猫", sterilized: null,
-      status: "shop", family: "", area: "同创", silhouette: "sit",
-      photo: null, has_photo: false,
-      note: "司猫",
+      id: "a44", name: "大吉（哆咪）", pool: false,
+      mood: null, color: "狸花加白", gender: "公猫", sterilized: true,
+      status: "home", family: "", area: "同创", silhouette: "sit",
+      photo: "a44.jpg", has_photo: true,
+      note: "",
       relations: [
         { label: "朋友", names: ["猪仔"] },
       ],
@@ -1273,6 +1273,17 @@
       status: "home", family: "", area: "同创", silhouette: "sit",
       photo: "a88.jpg", has_photo: true,
       relations: [],
+      story: [], quote: ""
+    },
+    {
+      id: "a89", name: "小橘", pool: false,
+      mood: null, color: "橘猫", gender: "母猫", sterilized: true,
+      status: "lost", family: "大黄家族", area: "创投", silhouette: "sit",
+      photo: "a89.jpg", has_photo: true,
+      note: "已绝育-失踪",
+      relations: [
+        { label: "爸爸", names: ["大黄"] },
+      ],
       story: [], quote: ""
     }
   ];
