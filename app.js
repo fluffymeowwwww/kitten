@@ -37,8 +37,8 @@
     if (/奶牛/.test(c)) return "cow";
     if (/简州/.test(c)) return "jianzhou";
     if (/三花|玳瑁|彩狸/.test(c)) return "calico";
-    if (/狸花|雀猫|虎斑/.test(c)) return "tabby";
-    if (/白猫/.test(c)) return "white";
+    if (/狸花|雀猫|虎斑|狸白/.test(c)) return "tabby";
+    if (/^白猫$/.test(c)) return "white";
     if (/黑猫|黑毛|玄猫/.test(c)) return "black";
     return "orange";  // 橘白/全橘等橘系及兜底
   }

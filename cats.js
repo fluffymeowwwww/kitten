@@ -1314,6 +1314,15 @@
       note: "已领养",
       relations: [],
       story: [], quote: ""
+    },
+    {
+      id: "a93", name: "豹姐", pool: false,
+      mood: null, color: "三花", gender: "母猫", sterilized: true,
+      status: "home", family: "", area: "创投", silhouette: "sit",
+      photo: "a93.jpg", has_photo: true,
+      note: "已领养",
+      relations: [],
+      story: [], quote: ""
     }
   ];
 
