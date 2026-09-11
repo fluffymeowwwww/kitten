@@ -1305,6 +1305,15 @@
         { label: "认识", names: ["黑警"] },
       ],
       story: [], quote: ""
+    },
+    {
+      id: "a92", name: "尖尖", pool: false,
+      mood: null, color: "黑毛", gender: "公猫", sterilized: false,
+      status: "home", family: "粽妈家族", area: "创投", silhouette: "sit",
+      photo: "a92.jpg", has_photo: true,
+      note: "已领养",
+      relations: [],
+      story: [], quote: ""
     }
   ];
 

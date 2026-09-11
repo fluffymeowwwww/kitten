@@ -17,12 +17,14 @@
     jianzhou: "assets/react-jianzhou.webp",   // 简州猫
     tabby: "assets/react-tabby.webp",         // 狸花（含雀猫）
     calico: "assets/react-calico.webp",       // 三花
-    white: "assets/react-white.webp"          // 纯白
+    white: "assets/react-white.webp",         // 纯白
+    black: "assets/react-black.webp"          // 黑猫
   };
   // 每组动作：pet 被摸蹭手心｜stretch 伸懒腰，决定旁白文案
   var COAT_SCENE = {
     orange: "pet", golden: "stretch", silver: "pet", cow: "pet",
-    jianzhou: "pet", tabby: "stretch", calico: "pet", white: "stretch"
+    jianzhou: "pet", tabby: "stretch", calico: "pet", white: "stretch",
+    black: "pet"
   };
   var REACT_TXT = {
     pet: ["TA 把脑袋轻轻凑了过来。", "咕噜咕噜——这是猫给你的见面礼。"],
@@ -37,6 +39,7 @@
     if (/三花|玳瑁|彩狸/.test(c)) return "calico";
     if (/狸花|雀猫|虎斑/.test(c)) return "tabby";
     if (/白猫/.test(c)) return "white";
+    if (/黑猫|黑毛|玄猫/.test(c)) return "black";
     return "orange";  // 橘白/全橘等橘系及兜底
   }
   var REACT_CYCLE = 3200;
