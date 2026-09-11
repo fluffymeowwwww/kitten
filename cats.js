@@ -258,7 +258,7 @@
       status: "wait", family: "", area: "", silhouette: "sit",
       photo: "caihong.jpg", has_photo: true,
       relations: [
-        { label: "男友", names: ["猕唠"] },
+        { label: "男友", names: ["milo"] },
       ],
       story: [
         "非常亲人、非常活泼的三花猫。",
@@ -1174,16 +1174,6 @@
       story: [], quote: ""
     },
     {
-      id: "a77", name: "猕唠", pool: false,
-      mood: null, color: "狸花猫", gender: "公猫", sterilized: true,
-      status: "wait", family: "小梅家族", area: "同创", silhouette: "sit",
-      photo: "a77.jpg", has_photo: true,
-      relations: [
-        { label: "女友", names: ["小队", "彩虹"] },
-      ],
-      story: [], quote: ""
-    },
-    {
       id: "a78", name: "瓜妹", pool: false,
       mood: null, color: "橘白", gender: "母猫", sterilized: true,
       status: "lost", family: "", area: "", silhouette: "sit",
@@ -1219,7 +1209,7 @@
       photo: "a81.jpg", has_photo: true,
       note: "已绝育寄养中-猫艾滋",
       relations: [
-        { label: "朋友", names: ["猕唠"] },
+        { label: "朋友", names: ["milo"] },
       ],
       story: [], quote: ""
     },
