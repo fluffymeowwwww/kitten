@@ -588,7 +588,7 @@
       id: "a26", name: "不理人三花悠米", pool: false,
       mood: null, color: "彩狸", gender: "母猫", sterilized: null,
       status: "shop", family: "", area: "同创", silhouette: "sit",
-      photo: null, has_photo: false,
+      photo: "a26.jpg", has_photo: true,
       note: "司猫",
       relations: [
         { label: "", names: [], text: "独来独往" },
