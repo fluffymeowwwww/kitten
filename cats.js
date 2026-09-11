@@ -909,7 +909,7 @@
     },
     {
       id: "a53", name: "利利", pool: false,
-      mood: null, color: "简州猫", gender: "母猫", sterilized: true,
+      mood: null, color: "三花猫", gender: "母猫", sterilized: true,
       status: "home", family: "小队家族", area: "同创", silhouette: "sit",
       photo: "a53.jpg", has_photo: true,
       relations: [
