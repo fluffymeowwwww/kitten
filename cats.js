@@ -382,7 +382,7 @@
       id: "a08", name: "紫霞", pool: false,
       mood: null, color: "彩狸", gender: "母猫", sterilized: true,
       status: "lost", family: "大黄家族", area: "创投", silhouette: "sit",
-      photo: null, has_photo: false,
+      photo: "a08.jpg", has_photo: true,
       note: "已绝育-失踪",
       relations: [
         { label: "义父", names: ["大黄"] },
@@ -395,7 +395,7 @@
       id: "a09", name: "雀公", pool: false,
       mood: null, color: "长毛橘猫", gender: "公猫", sterilized: false,
       status: "lost", family: "粽妈家族", area: "创投", silhouette: "sit",
-      photo: null, has_photo: false,
+      photo: "a09.jpg", has_photo: true,
       note: "未绝育-失踪",
       relations: [
         { label: "前妻", names: ["黄雀"] },
@@ -485,7 +485,7 @@
       id: "a17", name: "眼", pool: false,
       mood: null, color: "狸白？", gender: "母猫", sterilized: false,
       status: "lost", family: "", area: "同创", silhouette: "sit",
-      photo: "a17.jpg", has_photo: true,
+      photo: null, has_photo: false,
       note: "未绝育-失踪",
       relations: [
         { label: "cp", names: ["馒"] },
@@ -679,7 +679,7 @@
       id: "a33", name: "小橘", pool: false,
       mood: null, color: "全橘-古典纹", gender: "母猫", sterilized: true,
       status: "foster", family: "", area: "同创", silhouette: "sit",
-      photo: null, has_photo: false,
+      photo: "a33.jpg", has_photo: true,
       note: "已绝育-寄养",
       relations: [
         { label: "朋友", names: ["小银", "安安", "老鸭"] },
@@ -690,7 +690,7 @@
       id: "a34", name: "安安", pool: false,
       mood: null, color: "橘白", gender: "公猫", sterilized: true,
       status: "foster", family: "", area: "同创", silhouette: "sit",
-      photo: null, has_photo: false,
+      photo: "a34.jpg", has_photo: true,
       note: "已绝育-寄养",
       relations: [
         { label: "朋友", names: ["小橘"] },
