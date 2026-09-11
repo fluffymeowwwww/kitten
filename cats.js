@@ -2,10 +2,10 @@
    同创汇猫咪故事馆 · 猫咪数据（外置 JS，符合离线规范）
    ------------------------------------------------------------
    数据来源：腾讯文档《猫咪档案》
-     · HALL    = 表一「拆迁待安排猫咪」15 位 → 首页「摸一摸小猫」的抽卡池
+     · HALL    = 表一「拆迁待安排猫咪」16 位 → 首页「摸一摸小猫」的抽卡池
      · ARCHIVE = 表二「猫咪手册【2025】」去重后的个体档案
      · window.CATS = HALL + ARCHIVE，即「猫猫手册」列表的全部内容
-     · 列表里 HALL 的 15 位固定排在最前，其余按家族分组
+     · 列表里 HALL 的 16 位固定排在最前，其余按家族分组
 
    【如何补全】直接编辑下面的 HALL / ARCHIVE 数组。
    · 照片：58 只已经放进了 assets/cats/（文件名 = 猫的 id + .jpg，
@@ -18,7 +18,7 @@
    id         唯一 id（手册/摸猫/爪印都靠它定位，别改）
    name       名字
    alias      别名，原表括号里的叫法（如「话唠（喵桑）」→ 别名 喵桑）
-   pool       true = 进首页摸猫池（只有 HALL 的 15 位是 true）
+   pool       true = 进首页摸猫池（只有 HALL 的 16 位是 true）
    mood       性格档位，用于标签与共鸣卡：'close' 亲人｜'shy' 中等需培养｜'gone' 不亲人
               （摸到瞬间的插画/动效按 color 花色分组，与 mood 无关）
               非摸猫池的猫为 null
@@ -44,7 +44,7 @@
 (function () {
   "use strict";
 
-  /* ===== 一、拆迁待安排 · 首页摸猫池（15 位） ===== */
+  /* ===== 一、拆迁待安排 · 首页摸猫池（16 位） ===== */
   var HALL = [
     {
       id: "guagua", name: "瓜瓜", pool: true,
@@ -281,7 +281,19 @@
       ],
       quote: "话痨的奶牛猫找家，方式很直接——一直对着你说「你好」。",
       cardNote: "TA 的照片还在路上"
-    }
+    },
+    {
+      id: "elisabeth", name: "伊丽莎白", pool: true,
+      mood: "close", color: "白猫", gender: "公猫", sterilized: false,
+      status: "foster", family: "", area: "同创", silhouette: "sit",
+      photo: "elisabeth.jpg", has_photo: true,
+      relations: [],
+      story: [
+        "被救助的时候浑身是伤——过敏太痒，他一直挠个不停。",
+        "可他的眼睛像蓝宝石一样漂亮，我见犹怜。",
+      ],
+      quote: "浑身是伤，眼睛却像蓝宝石一样漂亮。",
+      cardNote: "TA 的照片还在路上"
   ];
 
   /* ===== 二、个体档案 · 猫猫手册（86 位） ===== */
