@@ -1176,7 +1176,7 @@
     {
       id: "a78", name: "瓜妹", pool: false,
       mood: null, color: "橘白", gender: "母猫", sterilized: true,
-      status: "lost", family: "", area: "", silhouette: "sit",
+      status: "lost", family: "瓜瓜家族", area: "", silhouette: "sit",
       photo: "a78.jpg", has_photo: true,
       note: "已绝育-失踪",
       relations: [
