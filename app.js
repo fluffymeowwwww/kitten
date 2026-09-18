@@ -980,10 +980,10 @@
     updateMeStrip();
     showView("v-cover");
 
-    // 纪念绅士：开屏弹窗（每个会话只显示一次）
-    if (!sessionStorage.getItem("tc-cat-story:memorial-seen")) {
+    // 纪念绅士：开屏弹窗（本地持久化，看过一次后不再弹出）
+    if (!localStorage.getItem("tc-cat-story:memorial-seen")) {
       var ov = document.getElementById("memorialOverlay");
-      if (ov) { ov.hidden = false; sessionStorage.setItem("tc-cat-story:memorial-seen", "1"); }
+      if (ov) { ov.hidden = false; localStorage.setItem("tc-cat-story:memorial-seen", "1"); }
     }
   }
 
