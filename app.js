@@ -980,11 +980,16 @@
     updateMeStrip();
     showView("v-cover");
 
-    // 纪念绅士：开屏弹窗（本地持久化，看过一次后不再弹出）
-    if (!localStorage.getItem("tc-cat-story:memorial-seen")) {
-      var ov = document.getElementById("memorialOverlay");
-      if (ov) { ov.hidden = false; localStorage.setItem("tc-cat-story:memorial-seen", "1"); }
-    }
+    // 纪念绅士：开屏弹窗（每 48 小时弹出一次）
+    (function () {
+      var key = "tc-cat-story:memorial-last";
+      var last = parseInt(localStorage.getItem(key) || "0", 10);
+      var now = Date.now();
+      if (now - last >= 48 * 60 * 60 * 1000) {
+        var ov = document.getElementById("memorialOverlay");
+        if (ov) { ov.hidden = false; localStorage.setItem(key, String(now)); }
+      }
+    })();
   }
 
   function closeMemorial() {
