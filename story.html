@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#f4ebd8">
   <title>同创汇猫咪故事馆 · 摸一摸小猫</title>
   <link rel="icon" href="data:,">
-  <link rel="stylesheet" href="story.css?v=1.6.21">
+  <link rel="stylesheet" href="story.css?v=1.7.0">
 </head>
 <body>
 
@@ -363,6 +363,21 @@
 
 </div>
 
+<!-- 纪念绅士 开屏弹窗 -->
+<div class="memorial-overlay" id="memorialOverlay" hidden>
+  <div class="memorial-card" role="dialog" aria-label="纪念绅士">
+    <button class="memorial-close" type="button" data-action="closeMemorial" aria-label="关闭">×</button>
+    <div class="memorial-photo">
+      <img src="assets/cats/shenshi.jpg" alt="绅士">
+    </div>
+    <h3 class="memorial-name">绅 士</h3>
+    <p class="memorial-tag">奶牛猫 · 已回喵星</p>
+    <p class="memorial-story">他好好地活了五、六岁，<br>就在被领养的前一夜，被狗咬死了。<br>我们甚至连一个救他的机会都没有。</p>
+    <p class="memorial-msg">想给 TA 一个家，就别再等了。<br>有些遗憾，一旦错过，就是永远。</p>
+    <button class="memorial-btn" type="button" data-action="closeMemorial">我知道了</button>
+  </div>
+</div>
+
 <!-- 底部导航 -->
 <nav class="tabbar" id="tabbar" aria-label="主导航">
   <button class="tab" type="button" data-action="tab" data-tab="v-cover">
@@ -383,7 +398,7 @@
   </button>
 </nav>
 
-<script src="cats.js?v=1.6.21"></script>
-<script src="app.js?v=1.6.21"></script>
+<script src="cats.js?v=1.7.0"></script>
+<script src="app.js?v=1.7.0"></script>
 </body>
 </html>

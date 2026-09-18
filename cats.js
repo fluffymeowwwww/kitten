@@ -270,7 +270,7 @@
     {
       id: "shenshi", name: "绅士", pool: true,
       mood: "close", color: "奶牛", gender: "公猫", sterilized: true,
-      status: "wait", family: "", area: "同创", silhouette: "sit",
+      status: "star", family: "", area: "同创", silhouette: "sit",
       photo: "shenshi.jpg", has_photo: true,
       relations: [
         { label: "朋友", names: ["猪仔", "阿孤"] },
@@ -278,9 +278,11 @@
       story: [
         "一只爱说话的奶牛猫。找家的方式很直接——一直对着你说「你好」。",
         "亲人，应该可以适应家养。",
+        "他好好地活了五、六岁，就在被领养的前一夜，被狗咬死了。",
+        "我们太痛苦了，甚至连一个救他的机会都没有。",
       ],
-      quote: "话痨的奶牛猫找家，方式很直接——一直对着你说「你好」。",
-      cardNote: "TA 的照片还在路上"
+      quote: "好好活了五六年，却没能等到那个家。",
+      cardNote: "TA 已回喵星"
     },
     {
       id: "elisabeth", name: "伊丽莎白", pool: true,

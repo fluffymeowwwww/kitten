@@ -947,6 +947,7 @@
         case "tab": onTab(t.dataset.tab, t.dataset); break;
         case "back": back(); break;
         case "copyWechat": copyWechat(t.dataset.wechat, t); break;
+        case "closeMemorial": closeMemorial(); break;
       }
     });
 
@@ -978,6 +979,17 @@
     if (dl) dl.textContent = daysLeft();
     updateMeStrip();
     showView("v-cover");
+
+    // 纪念绅士：开屏弹窗（每个会话只显示一次）
+    if (!sessionStorage.getItem("tc-cat-story:memorial-seen")) {
+      var ov = document.getElementById("memorialOverlay");
+      if (ov) { ov.hidden = false; sessionStorage.setItem("tc-cat-story:memorial-seen", "1"); }
+    }
+  }
+
+  function closeMemorial() {
+    var ov = document.getElementById("memorialOverlay");
+    if (ov) ov.hidden = true;
   }
 
   // 封面到摸猫只隔一步（v1.4 起无登记页，署名在卡片页就地改）
