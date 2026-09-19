@@ -84,8 +84,8 @@
   };
   var ARCHIVE_CAP = { star: "记着 TA 就好", lost: "给 TA 留一张空位" };
 
-  // 摸猫池：只有 HALL 的 16 位会出现在首页抽卡里
-  var POOL = CATS.filter(function (c) { return c.pool; });
+  // 摸猫池：只有待领养/司猫的 pool 猫会出现在首页抽卡里（寄养/失踪/回喵星不进待安置池）
+  var POOL = CATS.filter(function (c) { return c.pool && (c.status === "wait" || c.status === "shop"); });
   // 名字 → 猫（含别名与原表错别字），用于故事里 [[热词]] 的跳转
   var NAME_MAP = (function () {
     var m = {};
@@ -799,8 +799,8 @@
     var cur = WALL_FILTERS.filter(function (f) { return f.id === wallFilter; })[0];
     var list = CATS.filter(cur.test);
 
-    // 一、拆迁待安排（首页能摸到的 16 位）排最前
-    var pool = list.filter(function (c) { return c.pool; });
+    // 一、拆迁待安排（首页能摸到的待安置猫）排最前，寄养/失踪/回喵星不进此组
+    var pool = list.filter(function (c) { return c.pool && (c.status === "wait" || c.status === "shop"); });
     if (pool.length) {
       box.appendChild(wallSection("拆迁待安排", "首页能摸到的 " + pool.length + " 位，优先安置", pool));
     }
