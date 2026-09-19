@@ -101,7 +101,7 @@
     {
       id: "sanyanmei", name: "三眼妹", pool: true,
       mood: "close", color: "狸花猫", gender: "母猫", sterilized: true,
-      status: "wait", family: "", area: "同创", silhouette: "peek",
+      status: "foster", family: "", area: "同创", silhouette: "peek",
       photo: "sanyanmei.jpg", has_photo: true,
       relations: [
         { label: "女儿", names: ["紫霞", "老白"] },
@@ -132,7 +132,7 @@
     {
       id: "xiaoxiaomao", name: "小小猫", pool: true,
       mood: "close", color: "狸花猫", gender: "母猫", sterilized: true,
-      status: "wait", family: "狸花猫之家", area: "同创", silhouette: "sit",
+      status: "lost", family: "狸花猫之家", area: "同创", silhouette: "sit",
       photo: "xiaoxiaomao.jpg", has_photo: true,
       relations: [
         { label: "姐妹", names: ["小猫", "中猫"] },
