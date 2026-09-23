@@ -178,7 +178,7 @@
     {
       id: "tiebai", name: "铁白", pool: true,
       mood: "close", color: "白猫", gender: "母猫", sterilized: true,
-      status: "home", family: "瓜瓜家族", area: "同创", silhouette: "sit",
+      status: "home", family: "", area: "同创", silhouette: "sit",
       photo: "tiebai.jpg", has_photo: true,
       relations: [
         { label: "伙伴", names: ["milo"] },
