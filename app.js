@@ -804,8 +804,8 @@
     if (pool.length) {
       box.appendChild(wallSection("拆迁待安排", "首页能摸到的 " + pool.length + " 位，优先安置", pool));
     }
-    // 二、其余按家族分组
-    var rest = list.filter(function (c) { return !c.pool; });
+    // 二、其余按家族分组（只有被移出待安置组的猫回到这里，避免 pool:true 但非 wait/shop 的猫整个丢失）
+    var rest = list.filter(function (c) { return pool.indexOf(c) === -1; });
     var families = [];
     rest.forEach(function (c) { if (c.family && families.indexOf(c.family) === -1) families.push(c.family); });
     families.forEach(function (f) {
