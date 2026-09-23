@@ -110,6 +110,7 @@
         "一只狸花猫。据说当年给她做绝育花了一千五——这一片身价最高的 TNR 选手。",
         "她生过一胎，女儿是[[紫霞]]和[[老白]]。孩子散在各处，她自己留了下来。",
         "依然亲人。好像不管经历过什么，她都愿意再信人一次。",
+        "后来附近频繁发生被狗咬的事，救助人担心她的安全，便带她去寄养了。现在她已经在等待一个心仪的领养人。",
       ],
       quote: "身价最高的 TNR 选手。经历过那么多，还是愿意再信人一次。",
       cardNote: "TA 的照片还在路上"
@@ -132,13 +133,13 @@
     {
       id: "xiaoxiaomao", name: "小小猫", pool: true,
       mood: "close", color: "狸花猫", gender: "母猫", sterilized: true,
-      status: "lost", family: "狸花猫之家", area: "同创", silhouette: "sit",
+      status: "wait", family: "狸花之家", area: "同创", silhouette: "sit",
       photo: "xiaoxiaomao.jpg", has_photo: true,
       relations: [
         { label: "姐妹", names: ["小猫", "中猫"] },
       ],
       story: [
-        "「狸花猫之家」的成员——一屋子全女生，每一只都亲人。",
+        "「狸花之家」的成员——一屋子全女生，每一只都亲人。",
         "三姐妹里她叫小小猫，约一岁。名字起得随意，等待却很认真。",
       ],
       quote: "全女生宿舍，每一只都亲人。她们在等一个愿意一次带两只的人。",
@@ -147,13 +148,13 @@
     {
       id: "xiaomao", name: "小猫", pool: true,
       mood: "close", color: "狸花猫", gender: "母猫", sterilized: true,
-      status: "wait", family: "狸花猫之家", area: "同创", silhouette: "sit",
+      status: "wait", family: "狸花之家", area: "同创", silhouette: "sit",
       photo: "xiaomao.jpg", has_photo: true,
       relations: [
         { label: "姐妹", names: ["小小猫", "中猫"] },
       ],
       story: [
-        "「狸花猫之家」三姐妹之一，约一岁，亲人。",
+        "「狸花之家」三姐妹之一，约一岁，亲人。",
         "名字是群护随口叫出来的——叫得多了，也就成了她的名字。",
       ],
       quote: "名字随意，等待却是认真的。",
@@ -162,13 +163,13 @@
     {
       id: "zhongmao", name: "中猫", pool: true,
       mood: "close", color: "狸花猫", gender: "母猫", sterilized: true,
-      status: "wait", family: "狸花猫之家", area: "同创", silhouette: "sit",
+      status: "wait", family: "狸花之家", area: "同创", silhouette: "sit",
       photo: "zhongmao.jpg", has_photo: true,
       relations: [
         { label: "姐妹", names: ["小小猫", "小猫"] },
       ],
       story: [
-        "「狸花猫之家」三姐妹之一，约一岁，亲人。",
+        "「狸花之家」三姐妹之一，约一岁，亲人。",
         "姐妹里排行中间的那位，安静地在原地等着。",
       ],
       quote: "三姐妹里中间的那位，也在等一个自己的名字。",
