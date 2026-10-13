@@ -101,7 +101,7 @@
     {
       id: "sanyanmei", name: "三眼妹", pool: true,
       mood: "close", color: "狸花猫", gender: "母猫", sterilized: true,
-      status: "foster", family: "", area: "同创", silhouette: "peek",
+      status: "home", family: "", area: "同创", silhouette: "peek",
       photo: "sanyanmei.jpg", has_photo: true,
       relations: [
         { label: "女儿", names: ["紫霞", "老白"] },
@@ -547,10 +547,10 @@
     },
     {
       id: "a21", name: "牛仔", pool: false,
-      mood: null, color: "奶牛", gender: "母猫", sterilized: false,
+      mood: null, color: "奶牛", gender: "母猫", sterilized: true,
       status: "lost", family: "大脸家族", area: "同创", silhouette: "sit",
       photo: "a21.jpg", has_photo: true,
-      note: "未绝育-失踪",
+      note: "已绝育-失踪",
       relations: [
         { label: "爸爸", names: ["大脸"] },
         { label: "妈妈", names: ["黑头发三花"] },
