@@ -1345,6 +1345,17 @@
       note: "已绝育-待领养",
       relations: [],
       story: [], quote: ""
+    },
+    {
+      id: "a96", name: "黄大脸", pool: true,
+      mood: "far", color: "橘白", gender: "未知", sterilized: false,
+      status: "wait", family: "小梅家族", area: "同创", silhouette: "peek",
+      photo: null, has_photo: false,
+      note: "未绝育-抓捕不到",
+      relations: [
+        { label: "新朋友", names: ["点白"] },
+      ],
+      story: [], quote: ""
     }
   ];
 
