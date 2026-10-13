@@ -1338,8 +1338,8 @@
       story: [], quote: ""
     },
     {
-      id: "a95", name: "小断尾", pool: false,
-      mood: null, color: "雀猫", gender: "母猫", sterilized: true,
+      id: "a95", name: "小断尾", pool: true,
+      mood: "mid", color: "雀猫", gender: "母猫", sterilized: true,
       status: "wait", family: "小梅家族", area: "同创", silhouette: "sit",
       photo: "a95.jpg", has_photo: true,
       note: "已绝育-待领养",
