@@ -1365,6 +1365,15 @@
       note: "猫妈已绝育-猫崽未绝育",
       relations: [],
       story: [], quote: ""
+    },
+    {
+      id: "a98", name: "弟兄", pool: true,
+      mood: "close", color: "橘雀", gender: "公猫", sterilized: true,
+      status: "wait", family: "", area: "同创", silhouette: "peek",
+      photo: null, has_photo: false,
+      note: "已绝育-超级亲人",
+      relations: [],
+      story: [], quote: ""
     }
   ];
 
