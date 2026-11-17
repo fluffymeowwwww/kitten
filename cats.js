@@ -1338,8 +1338,8 @@
       story: [], quote: ""
     },
     {
-      id: "a95", name: "小断尾", pool: true,
-      mood: "mid", color: "雀猫", gender: "母猫", sterilized: true,
+      id: "a95", name: "猪咪", pool: true,
+      mood: "shy", color: "雀猫", gender: "母猫", sterilized: true,
       status: "wait", family: "小梅家族", area: "同创", silhouette: "sit",
       photo: "a95.jpg", has_photo: true,
       note: "已绝育-待领养",
@@ -1348,13 +1348,22 @@
     },
     {
       id: "a96", name: "黄大脸", pool: true,
-      mood: "far", color: "橘白", gender: "未知", sterilized: false,
+      mood: "gone", color: "橘白", gender: "未知", sterilized: false,
       status: "wait", family: "小梅家族", area: "同创", silhouette: "peek",
       photo: null, has_photo: false,
       note: "未绝育-抓捕不到",
       relations: [
         { label: "新朋友", names: ["点白"] },
       ],
+      story: [], quote: ""
+    },
+    {
+      id: "a97", name: "酒花&崽", pool: true,
+      mood: "close", color: "狸花猫", gender: "母猫", sterilized: false,
+      status: "wait", family: "", area: "同创", silhouette: "family",
+      photo: null, has_photo: false,
+      note: "猫妈已绝育-猫崽未绝育",
+      relations: [],
       story: [], quote: ""
     }
   ];
