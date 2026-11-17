@@ -1350,7 +1350,7 @@
       id: "a96", name: "黄大脸", pool: true,
       mood: "gone", color: "橘白", gender: "未知", sterilized: false,
       status: "wait", family: "小梅家族", area: "同创", silhouette: "peek",
-      photo: null, has_photo: false,
+      photo: "a96.jpg", has_photo: true,
       note: "未绝育-抓捕不到",
       relations: [
         { label: "新朋友", names: ["点白"] },
@@ -1361,7 +1361,7 @@
       id: "a97", name: "酒花&崽", pool: true,
       mood: "close", color: "狸花猫", gender: "母猫", sterilized: false,
       status: "wait", family: "", area: "同创", silhouette: "family",
-      photo: null, has_photo: false,
+      photo: "a97.jpg", has_photo: true,
       note: "猫妈已绝育-猫崽未绝育",
       relations: [],
       story: [], quote: ""
@@ -1370,7 +1370,7 @@
       id: "a98", name: "弟兄", pool: true,
       mood: "close", color: "橘雀", gender: "公猫", sterilized: true,
       status: "wait", family: "", area: "同创", silhouette: "peek",
-      photo: null, has_photo: false,
+      photo: "a98.jpg", has_photo: true,
       note: "已绝育-超级亲人",
       relations: [],
       story: [], quote: ""
